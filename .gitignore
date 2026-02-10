@@ -1,6 +1,7 @@
 .env
 .venv
 node_modules
+.claude/
 
 *.pyc
 __pycache__/
