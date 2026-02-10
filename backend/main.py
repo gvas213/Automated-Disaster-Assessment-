@@ -5,36 +5,26 @@ import sys
 
 from openai import OpenAI
 from dotenv import load_dotenv
-from PIL import Image, ImageDraw, ImageFont
+
+from cropping import find_disaster_quartets, crop_buildings
 
 load_dotenv()
 client = OpenAI()
 
-# --- Configuration ---
-INPUT_DIR = os.path.join(os.path.dirname(__file__), "test_images")
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output_images")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+DISASTER_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output")
+os.makedirs(DISASTER_OUTPUT_DIR, exist_ok=True)
 
-DETECTION_PROMPT = """You are given two images of the same location. The first image is BEFORE a natural disaster. The second image is AFTER the disaster.
+DAMAGE_PROMPT = """You are given two cropped satellite images of the same building/structure. The first image is BEFORE a natural disaster. The second image is AFTER the disaster.
 
-Compare both images carefully. Identify all visible damage in the AFTER image by comparing it to the BEFORE image.
+Compare both images carefully and assess the damage to this structure.
 
-For each area of damage, return a JSON array of objects with these fields:
-- "label": short description of the damage (e.g. "collapsed roof", "flooded road", "fallen tree", "structural crack", "debris field")
-- "severity": one of "minor", "moderate", "severe"
-- "box": [x_min, y_min, x_max, y_max] as percentages (0-100) of the AFTER image's width and height
+Return ONLY a raw JSON object (no markdown, no explanation) with these fields:
+- "feature_type": the type of structure (e.g. "building", "lot", "land", "farm", "road", "bridge")
+- "subtype": the damage level, one of: "no-damage", "minor-damage", "major-damage", "destroyed"
 
-Return ONLY the raw JSON array, no markdown, no explanation. Example:
-[{"label": "collapsed roof", "severity": "severe", "box": [10, 5, 45, 30]}, {"label": "flooded road", "severity": "moderate", "box": [0, 60, 100, 95]}]
+Example:
+{"feature_type": "building", "subtype": "minor-damage"}
 """
-
-# Color palette by severity
-SEVERITY_COLORS = {
-    "minor": (255, 200, 0),     # yellow
-    "moderate": (255, 120, 0),  # orange
-    "severe": (255, 0, 0),      # red
-}
-DEFAULT_COLOR = (0, 100, 255)
 
 
 def encode_image(path: str) -> str:
@@ -42,41 +32,29 @@ def encode_image(path: str) -> str:
         return base64.b64encode(f.read()).decode("utf-8")
 
 
-def get_mime(path: str) -> str:
-    ext = os.path.splitext(path)[1].lower()
-    if ext in (".jpg", ".jpeg"):
-        return "image/jpeg"
-    elif ext == ".png":
-        return "image/png"
-    elif ext == ".webp":
-        return "image/webp"
-    return "image/jpeg"
-
-
-def detect_damage(before_path: str, after_path: str) -> list[dict]:
-    before_b64 = encode_image(before_path)
-    after_b64 = encode_image(after_path)
+def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
+    pre_b64 = encode_image(pre_crop_path)
+    post_b64 = encode_image(post_crop_path)
 
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=[{
             "role": "user",
             "content": [
-                {"type": "input_text", "text": DETECTION_PROMPT},
+                {"type": "input_text", "text": DAMAGE_PROMPT},
                 {
                     "type": "input_image",
-                    "image_url": f"data:{get_mime(before_path)};base64,{before_b64}",
+                    "image_url": f"data:image/png;base64,{pre_b64}",
                 },
                 {
                     "type": "input_image",
-                    "image_url": f"data:{get_mime(after_path)};base64,{after_b64}",
+                    "image_url": f"data:image/png;base64,{post_b64}",
                 },
             ],
         }],
     )
 
     raw = response.output_text.strip()
-    # Strip markdown fences if present
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1]
         raw = raw.rsplit("```", 1)[0]
@@ -84,96 +62,58 @@ def detect_damage(before_path: str, after_path: str) -> list[dict]:
     return json.loads(raw)
 
 
-def annotate_image(image_path: str, detections: list[dict], output_path: str):
-    img = Image.open(image_path).convert("RGB")
-    draw = ImageDraw.Draw(img)
-    w, h = img.size
-
-    try:
-        font_size = max(14, int(min(w, h) * 0.02))
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except OSError:
-        font = ImageFont.load_default()
-
-    for det in detections:
-        severity = det.get("severity", "moderate")
-        color = SEVERITY_COLORS.get(severity, DEFAULT_COLOR)
-        box_pct = det["box"]  # [x_min%, y_min%, x_max%, y_max%]
-        x1 = int(box_pct[0] / 100 * w)
-        y1 = int(box_pct[1] / 100 * h)
-        x2 = int(box_pct[2] / 100 * w)
-        y2 = int(box_pct[3] / 100 * h)
-
-        # Draw bounding box
-        outline_width = max(2, int(min(w, h) * 0.004))
-        draw.rectangle([x1, y1, x2, y2], outline=color, width=outline_width)
-
-        # Draw label with severity
-        label = f"{det['label']} [{severity}]"
-        bbox = font.getbbox(label)
-        text_w = bbox[2] - bbox[0]
-        text_h = bbox[3] - bbox[1]
-        padding = 4
-        label_y = max(0, y1 - text_h - padding * 2)
-        draw.rectangle(
-            [x1, label_y, x1 + text_w + padding * 2, label_y + text_h + padding * 2],
-            fill=color,
-        )
-        draw.text((x1 + padding, label_y + padding), label, fill=(255, 255, 255), font=font)
-
-    img.save(output_path)
-    print(f"Saved annotated image to {output_path}")
-
-
-def find_pairs(input_dir: str) -> list[tuple[str, str]]:
-    """Find before/after image pairs.
-
-    Expected naming convention:
-      <name>_before.jpg  and  <name>_after.jpg
-    """
-    files = os.listdir(input_dir)
-    after_files = [f for f in files if "_after" in f.lower()]
-    pairs = []
-
-    for after_file in after_files:
-        name, ext = os.path.splitext(after_file)
-        base = name.lower().replace("_after", "")
-
-        # Find matching before file
-        for f in files:
-            fname, fext = os.path.splitext(f)
-            if "_before" in f.lower() and fname.lower().replace("_before", "") == base:
-                pairs.append((
-                    os.path.join(input_dir, f),
-                    os.path.join(input_dir, after_file),
-                ))
-                break
-
-    return pairs
-
-
 def main():
-    pairs = find_pairs(INPUT_DIR)
-
-    if not pairs:
-        print(f"No before/after image pairs found in {INPUT_DIR}.")
-        print("Expected naming: <name>_before.jpg and <name>_after.jpg")
-        print("Example: flood_before.jpg, flood_after.jpg")
+    quartets = find_disaster_quartets()
+    if not quartets:
+        print("No disaster quartets found.")
         sys.exit(1)
 
-    for before_path, after_path in pairs:
-        before_name = os.path.basename(before_path)
-        after_name = os.path.basename(after_path)
-        output_path = os.path.join(OUTPUT_DIR, f"annotated_{after_name}")
+    # Test with first quartet only (to save credits)
+    pre_img, post_img, pre_json, post_json = quartets[0]
+    base = os.path.splitext(os.path.basename(post_img))[0].replace("_post_disaster", "")
+    print(f"Processing: {base}")
 
-        print(f"\nComparing: {before_name} -> {after_name}")
-        detections = detect_damage(before_path, after_path)
-        print(f"  Found {len(detections)} damage areas:")
-        for det in detections:
-            print(f"    - {det['label']} [{det.get('severity', '?')}] at {det['box']}")
+    # Crop buildings
+    crops = crop_buildings(pre_img, post_img, post_json)
 
-        # Annotate only the AFTER image
-        annotate_image(after_path, detections, output_path)
+    # Load ground truth JSON for the given data
+    with open(post_json) as f:
+        gt_data = json.load(f)
+    gt_features = {feat["properties"]["uid"]: feat["properties"] for feat in gt_data["features"]["xy"]}
+
+    # Send each cropped pair to the VLM
+    results = []
+    for pre_crop, post_crop, uid, ground_truth in crops:
+        print(f"\n  Assessing {uid} (ground truth: {ground_truth})...")
+        prediction = assess_damage(pre_crop, post_crop)
+
+        given = gt_features[uid]
+        entry = {
+            "uid": uid,
+            "given": {
+                "feature_type": given["feature_type"],
+                "subtype": given["subtype"],
+            },
+            "predicted": {
+                "feature_type": prediction["feature_type"],
+                "subtype": prediction["subtype"],
+            },
+        }
+        results.append(entry)
+
+        print(f"    VLM says: {prediction['feature_type']} / {prediction['subtype']}")
+        match = "MATCH" if prediction["subtype"] == ground_truth else "MISMATCH"
+        print(f"    {match}")
+
+    # Save results to disaster-output/
+    output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_vlm_results.json")
+    with open(output_path, "w") as f:
+        json.dump(results, f, indent=2)
+    print(f"\nResults saved to {output_path}")
+
+    # Quick accuracy summary
+    correct = sum(1 for r in results if r["given"]["subtype"] == r["predicted"]["subtype"])
+    print(f"Accuracy: {correct}/{len(results)} ({100 * correct / len(results):.1f}%)")
 
 
 if __name__ == "__main__":

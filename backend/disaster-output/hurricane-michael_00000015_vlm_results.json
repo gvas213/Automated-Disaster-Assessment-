@@ -1,0 +1,35 @@
+[
+  {
+    "uid": "c22473b4-40dd-4215-85df-60b4be28a689",
+    "given": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "5cdb272c-2905-43ba-b533-a901855114ca",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "a80c8fcc-75e6-48e0-9c57-a5d050be1021",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  }
+]
