@@ -1,10 +1,10 @@
-import './App.css'
-
 import Map from './components/Map'
+import NavBar from './components/NavBar'
 
 function App() {
- return (
-    <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
+  return (
+    <div className="h-screen w-screen overflow-hidden">
+      <NavBar />
       <Map />
     </div>
   )
