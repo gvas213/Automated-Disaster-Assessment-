@@ -120,7 +120,7 @@ export default function ChatBox({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[20000] pointer-events-none">
+    <div className="fixed inset-0 z-20000 pointer-events-none">
 
       {/* Chatbox panel window width (width controlled by panelWidth state)*/} 
       <aside
@@ -179,7 +179,7 @@ export default function ChatBox({ onClose }) {
               className={`flex mb-3 ${msg.isUser ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`px-4 py-3 rounded-2xl max-w-[80%] break-words text-sm leading-relaxed ${
+                className={`px-4 py-3 rounded-2xl max-w-[80%] wrap-break-word text-sm leading-relaxed ${
                   msg.isUser
                     ? "bg-white/15 text-white rounded-br-sm"
                     : "bg-white/5 text-white/90 rounded-bl-sm border border-white/10"

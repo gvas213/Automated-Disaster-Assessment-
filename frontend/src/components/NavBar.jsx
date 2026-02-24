@@ -13,7 +13,7 @@ const useFlash = () => {
   return [active, flash]
 }
 
-export default function NavBar({onChatToggle, chatOpen}) {
+export default function NavBar({onChatToggle}) {
 
   // --- BUTTON FLASH STATES ---
   // Each button gets its own flash. "clicked" = is it blue right now? "flash" = trigger the blue

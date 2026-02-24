@@ -18,17 +18,17 @@ export function SeverityLegend({ isOpen }) {
       right: '68px',  
       zIndex: 1000,
       backgroundColor: '#1e1e1e',
-      borderRadius: '8px',
-      padding: '10px 14px',  
+      borderRadius: '10px',
+      padding: '13px 18px',  
       boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
-      minWidth: '120px',    
+      minWidth: '150px',    
     }}>
       {/* Legend Title */}
       <div style={{
         color: '#ffffff',
         fontWeight: '700',
-        fontSize: '11px',     
-        marginBottom: '10px',
+        fontSize: '14px',     
+        marginBottom: '13px',
         textAlign: 'center',
       }}>
         Severity Level
@@ -39,21 +39,21 @@ export function SeverityLegend({ isOpen }) {
         <div key={label} style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',           
-          marginBottom: '6px', 
+          gap: '10px',           
+          marginBottom: '8px', 
         }}>
           {/* Color Box of Severity*/}
           <div style={{
-            width: '18px',      
-            height: '18px',     
+            width: '23px',      
+            height: '23px',     
             backgroundColor: color,
-            borderRadius: '4px',
+            borderRadius: '5px',
             flexShrink: 0,
           }} />
           {/* Label*/}
           <span style={{
             color: '#ffffff',
-            fontSize: '11px',   
+            fontSize: '14px',   
             fontWeight: '400',
           }}>
             {label}
