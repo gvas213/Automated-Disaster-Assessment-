@@ -1,5 +1,6 @@
-import { MapContainer, TileLayer, ZoomControl, Polygon } from 'react-leaflet'
+import { MapContainer, TileLayer, Polygon } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
+import { CustomZoomControl } from './MapControls'
 
 // Coordinates for Houston, TX
 const DEFAULT_CENTER = [29.7604, -95.3698] 
@@ -19,19 +20,16 @@ export default function Map() {
       center={DEFAULT_CENTER}
       zoom={DEFAULT_ZOOM}
       style={{ width: '100vw', height: '100vh' }}
-      zoomControl={false}
+      zoomControl={false}       // Disable default zoom control so we can use our custom one
       attributionControl={false}
     >
-      {/* Positioned at bottom-right to stay clear of your NavBar */}
-      <ZoomControl position="bottomright" />
-
       {/* Dark-themed map tiles */}
       <TileLayer
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         subdomains="abcd"
         maxZoom={20}
       />
-      
+
       {/* The Red Disaster Zone Polygon */}
       <Polygon 
         positions={hazardZoneCoordinates} 
@@ -42,6 +40,9 @@ export default function Map() {
           weight: 2 
         }} 
       />
+
+      {/* Custom zoom control + severity legend toggle — positioned at bottom-right */}
+      <CustomZoomControl />
     </MapContainer>
   )
 }
