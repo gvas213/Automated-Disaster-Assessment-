@@ -1,19 +1,17 @@
-import base64
 import json
 import os
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from openai import OpenAI
-from dotenv import load_dotenv
+import torch
+from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
 
 from cropping import find_disaster_quartets, crop_buildings
 
-load_dotenv()
-client = OpenAI()
-
 DISASTER_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output")
 os.makedirs(DISASTER_OUTPUT_DIR, exist_ok=True)
+
+MODEL_ID = "Qwen/Qwen3-VL-8B-Instruct"
+MODEL_CACHE_DIR = os.path.join(os.path.dirname(__file__), "hf_models")
 
 DAMAGE_PROMPT = """You are given two cropped satellite images of the same area. The first image is BEFORE a natural disaster. The second image is AFTER the disaster.
 
@@ -28,34 +26,64 @@ Example:
 """
 
 
-def encode_image(path: str) -> str:
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode("utf-8")
+def load_model():
+    """Load Qwen3-VL-8B and processor onto GPU."""
+    print(f"Loading model: {MODEL_ID} (cache: {MODEL_CACHE_DIR})")
+    processor = AutoProcessor.from_pretrained(MODEL_ID, cache_dir=MODEL_CACHE_DIR)
+
+    quantization_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_compute_dtype=torch.bfloat16,
+    )
+    model = AutoModelForImageTextToText.from_pretrained(
+        MODEL_ID,
+        dtype=torch.bfloat16,
+        device_map="auto",
+        cache_dir=MODEL_CACHE_DIR,
+        quantization_config=quantization_config,
+    )
+    print(f"Model loaded (4-bit quantized) on {model.device}")
+    return processor, model
 
 
-def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
-    pre_b64 = encode_image(pre_crop_path)
-    post_b64 = encode_image(post_crop_path)
+def assess_damage(processor, model, pre_crop_path: str, post_crop_path: str) -> dict:
+    """Send pre/post crop pair to the local VLM and parse the JSON response."""
+    from PIL import Image
 
-    response = client.responses.create(
-        model="gpt-4.1-mini",
-        input=[{
+    pre_img = Image.open(pre_crop_path).convert("RGB")
+    post_img = Image.open(post_crop_path).convert("RGB")
+
+    messages = [
+        {
             "role": "user",
             "content": [
-                {"type": "input_text", "text": DAMAGE_PROMPT},
-                {
-                    "type": "input_image",
-                    "image_url": f"data:image/png;base64,{pre_b64}",
-                },
-                {
-                    "type": "input_image",
-                    "image_url": f"data:image/png;base64,{post_b64}",
-                },
+                {"type": "image", "image": pre_img},
+                {"type": "image", "image": post_img},
+                {"type": "text", "text": DAMAGE_PROMPT},
             ],
-        }],
-    )
+        }
+    ]
 
-    raw = response.output_text.strip()
+    inputs = processor.apply_chat_template(
+        messages,
+        tokenize=True,
+        add_generation_prompt=True,
+        return_dict=True,
+        return_tensors="pt",
+    ).to(model.device)
+
+    with torch.no_grad():
+        generated_ids = model.generate(**inputs, max_new_tokens=256)
+
+    generated_ids_trimmed = [
+        out_ids[len(in_ids):]
+        for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+    ]
+    raw = processor.batch_decode(
+        generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    )[0].strip()
+
+    # Strip markdown fences if present
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1]
         raw = raw.rsplit("```", 1)[0]
@@ -63,21 +91,21 @@ def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
     return json.loads(raw)
 
 
-def process_quartet(pre_img, post_img, post_json) -> list[dict]:
+def process_quartet(processor, model, pre_img_path, post_img_path, post_json_path) -> list[dict]:
     """Process a single quartet: crop buildings, assess damage, return results."""
-    base = os.path.splitext(os.path.basename(post_img))[0].replace("_post_disaster", "")
+    base = os.path.splitext(os.path.basename(post_img_path))[0].replace("_post_disaster", "")
     print(f"\nProcessing: {base}")
 
-    crops = crop_buildings(pre_img, post_img, post_json)
+    crops = crop_buildings(pre_img_path, post_img_path, post_json_path)
 
-    with open(post_json) as f:
+    with open(post_json_path) as f:
         gt_data = json.load(f)
     gt_features = {feat["properties"]["uid"]: feat["properties"] for feat in gt_data["features"]["xy"]}
 
     results = []
     for pre_crop, post_crop, uid, ground_truth in crops:
         print(f"\n  Assessing {uid} (ground truth: {ground_truth})...")
-        prediction = assess_damage(pre_crop, post_crop)
+        prediction = assess_damage(processor, model, pre_crop, post_crop)
 
         given = gt_features[uid]
         entry = {
@@ -98,7 +126,7 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
         print(f"    {match}")
 
     # Save per-quartet results
-    output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_vlm_results.json")
+    output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_hf_results.json")
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
     print(f"Results saved to {output_path}")
@@ -112,33 +140,20 @@ def main():
         print("No disaster quartets found.")
         sys.exit(1)
 
-    num_to_process = min(2, len(quartets))
-    print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 4 threads.")
+    processor, model = load_model()
 
+    num_to_process = min(5, len(quartets))
+    print(f"Found {len(quartets)} quartets, processing first {num_to_process}.")
+
+    # No threading — GPU inference is sequential on one device
     all_results = []
-    pool = ThreadPoolExecutor(max_workers=3)
     try:
-        futures = {}
         for i in range(num_to_process):
             pre_img, post_img, pre_json, post_json = quartets[i]
-            future = pool.submit(process_quartet, pre_img, post_img, post_json)
-            futures[future] = os.path.basename(post_img)
-
-        for future in as_completed(futures):
-            name = futures[future]
-            try:
-                results = future.result()
-                all_results.extend(results)
-            except Exception as e:
-                print(f"\nERROR processing {name}: {e}")
+            results = process_quartet(processor, model, pre_img, post_img, post_json)
+            all_results.extend(results)
     except KeyboardInterrupt:
-        print("\nInterrupted! Cancelling pending tasks...")
-        for future in futures:
-            future.cancel()
-        pool.shutdown(wait=False, cancel_futures=True)
-        sys.exit(1)
-    finally:
-        pool.shutdown(wait=True)
+        print("\nInterrupted!")
 
     # Overall accuracy summary
     if all_results:
