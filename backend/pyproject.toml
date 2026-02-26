@@ -8,6 +8,7 @@ dependencies = [
     "accelerate>=1.12.0",
     "bitsandbytes>=0.49.2",
     "dotenv>=0.9.9",
+    "google-genai>=1.65.0",
     "openai>=2.18.0",
     "pillow>=11.0.0",
     "qwen-vl-utils>=0.0.14",
