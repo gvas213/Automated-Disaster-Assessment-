@@ -2,11 +2,11 @@ import json
 import os
 import re
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 DISASTER_IMAGES_DIR = os.path.join(os.path.dirname(__file__), "disaster-images")
 DISASTER_JSON_DIR = os.path.join(os.path.dirname(__file__), "disaster-json")
-CROP_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "cropped")
+CROP_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output_image")
 os.makedirs(CROP_OUTPUT_DIR, exist_ok=True)
 
 
@@ -40,11 +40,29 @@ def parse_wkt_polygon(wkt: str) -> list[tuple[float, float]]:
     return coords
 
 
-def bbox_from_coords(coords: list[tuple[float, float]]) -> tuple[int, int, int, int]:
-    """Return (x_min, y_min, x_max, y_max) bounding box from polygon coords."""
+def padded_bbox(
+    coords: list[tuple[float, float]],
+    img_width: int,
+    img_height: int,
+    padding: int = 50,
+    min_size: int = 150,
+) -> tuple[int, int, int, int]:
+    """Return padded (x_min, y_min, x_max, y_max) bounding box, clamped to image bounds."""
     xs = [c[0] for c in coords]
     ys = [c[1] for c in coords]
-    return int(min(xs)), int(min(ys)), int(max(xs)) + 1, int(max(ys)) + 1
+    x_min, y_min = int(min(xs)) - padding, int(min(ys)) - padding
+    x_max, y_max = int(max(xs)) + 1 + padding, int(max(ys)) + 1 + padding
+
+    # Enforce minimum crop size (expand from center)
+    w, h = x_max - x_min, y_max - y_min
+    if w < min_size:
+        cx = (x_min + x_max) // 2
+        x_min, x_max = cx - min_size // 2, cx + min_size // 2
+    if h < min_size:
+        cy = (y_min + y_max) // 2
+        y_min, y_max = cy - min_size // 2, cy + min_size // 2
+
+    return max(0, x_min), max(0, y_min), min(img_width, x_max), min(img_height, y_max)
 
 
 def crop_buildings(pre_img_path, post_img_path, post_json_path) -> list[tuple[str, str, str, str]]:
@@ -60,6 +78,8 @@ def crop_buildings(pre_img_path, post_img_path, post_json_path) -> list[tuple[st
     post_img = Image.open(post_img_path)
     base = os.path.splitext(os.path.basename(post_img_path))[0].replace("_post_disaster", "")
 
+    img_w, img_h = pre_img.size
+
     results = []
     for feat in features:
         uid = feat["properties"]["uid"]
@@ -67,10 +87,17 @@ def crop_buildings(pre_img_path, post_img_path, post_json_path) -> list[tuple[st
         coords = parse_wkt_polygon(feat["wkt"])
         if not coords:
             continue
-        box = bbox_from_coords(coords)
+        box = padded_bbox(coords, img_w, img_h)
+        x_min, y_min = box[0], box[1]
 
-        pre_crop = pre_img.crop(box)
-        post_crop = post_img.crop(box)
+        pre_crop = pre_img.crop(box).copy()
+        post_crop = post_img.crop(box).copy()
+
+        # Draw red polygon outline shifted to crop-local coordinates
+        local_coords = [(x - x_min, y - y_min) for x, y in coords]
+        for crop in (pre_crop, post_crop):
+            draw = ImageDraw.Draw(crop)
+            draw.polygon(local_coords, outline="red", width=2)
 
         pre_path = os.path.join(CROP_OUTPUT_DIR, f"{base}_{uid}_pre.png")
         post_path = os.path.join(CROP_OUTPUT_DIR, f"{base}_{uid}_post.png")

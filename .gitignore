@@ -6,3 +6,9 @@ node_modules
 *.pyc
 __pycache__/
 .DS_Store
+
+disaster-images/
+disaster-json/
+cropped/
+disaster-output/
+output_image/
