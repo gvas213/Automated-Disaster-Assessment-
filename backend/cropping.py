@@ -44,7 +44,7 @@ def padded_bbox(
     coords: list[tuple[float, float]],
     img_width: int,
     img_height: int,
-    padding: int = 50,
+    padding: int = 150,
     min_size: int = 150,
 ) -> tuple[int, int, int, int]:
     """Return padded (x_min, y_min, x_max, y_max) bounding box, clamped to image bounds."""
