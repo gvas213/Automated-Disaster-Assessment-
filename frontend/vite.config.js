@@ -1,10 +1,17 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite' // <-- Check for this
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(), // <-- And this
-  ],
-})
+  plugins: [react(), tailwindcss()],
+
+  server: {
+    host: true,
+    allowedHosts: ["test.disaster.fit"], // or ".disaster.fit"
+  },
+
+  preview: {
+    host: true,
+    allowedHosts: ["test.disaster.fit"], // or ".disaster.fit"
+  },
+});
