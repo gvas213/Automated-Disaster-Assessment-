@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { MapContainer, TileLayer, ImageOverlay, GeoJSON, ZoomControl } from 'react-leaflet'
+import { MapContainer, TileLayer, ImageOverlay, GeoJSON } from 'react-leaflet'  // removed ZoomControl
+import { CustomZoomControl } from './MapControls'  
 import 'leaflet/dist/leaflet.css'
 
 const DEFAULT_CENTER = [29.7597, -95.4568]
@@ -74,7 +75,8 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         style={{ width: '100%', height: '100%' }}
         zoomControl={false}
       >
-        <ZoomControl position="bottomleft" />
+        {/* Custom zoom control + severity legend toggle — positioned at bottom-right */}
+        <CustomZoomControl />
 
         {/* Dark base map */}
         <TileLayer
@@ -94,8 +96,8 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         )}
 
         {/* Damage polygon from GeoJSON */}
-{/* Only show polygons if showPolygon is true */}
-{geoData && showPolygon && <GeoJSON key={currentMap?.map_id} data={geoData} style={getStyle} />}
+        {/* Only show polygons if showPolygon is true */}
+        {geoData && showPolygon && <GeoJSON key={currentMap?.map_id} data={geoData} style={getStyle} />}
       </MapContainer>
     </div>
   )
