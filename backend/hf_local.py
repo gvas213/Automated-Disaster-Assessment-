@@ -6,24 +6,13 @@ import torch
 from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
 
 from cropping import find_disaster_quartets, crop_buildings
+from prompt import DEFAULT_PROMPT
 
 DISASTER_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output")
 os.makedirs(DISASTER_OUTPUT_DIR, exist_ok=True)
 
 MODEL_ID = "Qwen/Qwen3-VL-8B-Instruct"
 MODEL_CACHE_DIR = os.path.join(os.path.dirname(__file__), "hf_models")
-
-DAMAGE_PROMPT = """You are given two cropped satellite images of the same area. The first image is BEFORE a natural disaster. The second image is AFTER the disaster.
-
-The structure to assess is highlighted with a RED outline in both images. Focus on the building/structure inside the red outline and compare its condition before and after.
-
-Return ONLY a raw JSON object (no markdown, no explanation) with these fields:
-- "feature_type": the type of structure (e.g. "building", "lot", "land", "farm", "road", "bridge")
-- "subtype": the damage level, one of: "no-damage", "minor-damage", "major-damage", "destroyed"
-
-Example:
-{"feature_type": "building", "subtype": "minor-damage"}
-"""
 
 
 def load_model():
@@ -59,7 +48,7 @@ def assess_damage(processor, model, pre_crop_path: str, post_crop_path: str) -> 
             "content": [
                 {"type": "image", "image": pre_img},
                 {"type": "image", "image": post_img},
-                {"type": "text", "text": DAMAGE_PROMPT},
+                {"type": "text", "text": DEFAULT_PROMPT},
             ],
         }
     ]

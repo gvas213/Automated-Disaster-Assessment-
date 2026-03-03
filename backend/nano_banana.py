@@ -1,51 +1,47 @@
-import base64
 import json
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-from openai import OpenAI
+from google import genai
+from google.genai import types
+from PIL import Image
 from dotenv import load_dotenv
 
 from cropping import find_disaster_quartets, crop_buildings
-from prompt import DEFAULT_PROMPT, PROMPT_V1, PROMPT_V2, PROMPT_V3
+from prompt import DEFAULT_PROMPT
 
 load_dotenv()
-client = OpenAI()
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 DISASTER_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output")
 os.makedirs(DISASTER_OUTPUT_DIR, exist_ok=True)
 
 
-
-def encode_image(path: str) -> str:
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode("utf-8")
-
-
 def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
-    pre_b64 = encode_image(pre_crop_path)
-    post_b64 = encode_image(post_crop_path)
+    pre_img = Image.open(pre_crop_path).convert("RGB")
+    post_img = Image.open(post_crop_path).convert("RGB")
 
-    response = client.responses.create(
-        model="gpt-4.1-mini",
-        input=[{
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": PROMPT_V1},
-                {
-                    "type": "input_image",
-                    "image_url": f"data:image/png;base64,{pre_b64}",
-                },
-                {
-                    "type": "input_image",
-                    "image_url": f"data:image/png;base64,{post_b64}",
-                },
-            ],
-        }],
+    contents = [DEFAULT_PROMPT, pre_img, post_img]
+    generate_content_config = types.GenerateContentConfig(
+        thinking_config=types.ThinkingConfig(
+            thinking_level="MINIMAL",
+        ),
+        response_modalities=["TEXT"],
     )
 
-    raw = response.output_text.strip()
+    # Stream and collect text chunks
+    raw = ""
+    for chunk in client.models.generate_content_stream(
+        model="gemini-3.1-flash-image-preview",
+        contents=contents,
+        config=generate_content_config,
+    ):
+        if chunk.parts is None:
+            continue
+        if chunk.text:
+            raw += chunk.text
+
+    raw = raw.strip()
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1]
         raw = raw.rsplit("```", 1)[0]
@@ -53,14 +49,13 @@ def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
     return json.loads(raw)
 
 
-def process_quartet(pre_img, post_img, post_json) -> list[dict]:
-    """Process a single quartet: crop buildings, assess damage, return results."""
-    base = os.path.splitext(os.path.basename(post_img))[0].replace("_post_disaster", "")
+def process_quartet(pre_img_path, post_img_path, post_json_path) -> list[dict]:
+    base = os.path.splitext(os.path.basename(post_img_path))[0].replace("_post_disaster", "")
     print(f"\nProcessing: {base}")
 
-    crops = crop_buildings(pre_img, post_img, post_json)
+    crops = crop_buildings(pre_img_path, post_img_path, post_json_path)
 
-    with open(post_json) as f:
+    with open(post_json_path) as f:
         gt_data = json.load(f)
     gt_features = {feat["properties"]["uid"]: feat["properties"] for feat in gt_data["features"]["xy"]}
 
@@ -88,7 +83,7 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
         print(f"    {match}")
 
     # Save per-quartet results
-    output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_vlm_results.json")
+    output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_nano_banana_results.json")
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
     print(f"Results saved to {output_path}")
@@ -102,11 +97,11 @@ def main():
         print("No disaster quartets found.")
         sys.exit(1)
 
-    num_to_process = min(5, len(quartets))
-    print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 4 threads.")
+    num_to_process = min(2, len(quartets))
+    print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 3 threads.")
 
     all_results = []
-    pool = ThreadPoolExecutor(max_workers=6)
+    pool = ThreadPoolExecutor(max_workers=3)
     try:
         futures = {}
         for i in range(num_to_process):

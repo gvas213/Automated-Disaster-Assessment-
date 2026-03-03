@@ -1,30 +1,20 @@
 import json
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from google import genai
 from google.genai import types
 from PIL import Image
 from dotenv import load_dotenv
 
 from cropping import find_disaster_quartets, crop_buildings
+from prompt import PROMPT_V1
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 DISASTER_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output")
 os.makedirs(DISASTER_OUTPUT_DIR, exist_ok=True)
-
-DAMAGE_PROMPT = """You are given two cropped satellite images of the same area. The first image is BEFORE a natural disaster. The second image is AFTER the disaster.
-
-The structure to assess is highlighted with a RED outline in both images. Focus on the building/structure inside the red outline and compare its condition before and after.
-
-Return ONLY a raw JSON object (no markdown, no explanation) with these fields:
-- "feature_type": the type of structure (e.g. "building", "lot", "land", "farm", "road", "bridge")
-- "subtype": the damage level, one of: "no-damage", "minor-damage", "major-damage", "destroyed"
-
-Example:
-{"feature_type": "building", "subtype": "minor-damage"}
-"""
 
 
 def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
@@ -33,7 +23,7 @@ def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",
-        contents=[DAMAGE_PROMPT, pre_img, post_img],
+        contents=[PROMPT_V1, pre_img, post_img],
     )
 
     raw = response.text.strip()
@@ -92,17 +82,33 @@ def main():
         print("No disaster quartets found.")
         sys.exit(1)
 
-    num_to_process = min(5, len(quartets))
-    print(f"Found {len(quartets)} quartets, processing first {num_to_process}.")
+    num_to_process = min(2, len(quartets))
+    print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 3 threads.")
 
     all_results = []
+    pool = ThreadPoolExecutor(max_workers=3)
     try:
+        futures = {}
         for i in range(num_to_process):
             pre_img, post_img, pre_json, post_json = quartets[i]
-            results = process_quartet(pre_img, post_img, post_json)
-            all_results.extend(results)
+            future = pool.submit(process_quartet, pre_img, post_img, post_json)
+            futures[future] = os.path.basename(post_img)
+
+        for future in as_completed(futures):
+            name = futures[future]
+            try:
+                results = future.result()
+                all_results.extend(results)
+            except Exception as e:
+                print(f"\nERROR processing {name}: {e}")
     except KeyboardInterrupt:
-        print("\nInterrupted!")
+        print("\nInterrupted! Cancelling pending tasks...")
+        for future in futures:
+            future.cancel()
+        pool.shutdown(wait=False, cancel_futures=True)
+        sys.exit(1)
+    finally:
+        pool.shutdown(wait=True)
 
     # Overall accuracy summary
     if all_results:
