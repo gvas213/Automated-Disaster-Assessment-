@@ -12,7 +12,7 @@ const useFlash = () => {
 // --- PROPS ---
 // current, total, onPrev, onNext come from App.jsx
 // onChatToggle also comes from App.jsx
-export default function NavBar({ onChatToggle, current, total, onPrev, onNext, showPolygon, onPolygonToggle }) {
+export default function NavBar({ onChatToggle, current, total, onPrev, onNext, onPolygonToggle }) {
   const [prevClicked, flashPrev] = useFlash()
   const [nextClicked, flashNext] = useFlash()
   const [chatClicked, flashChat] = useFlash()
