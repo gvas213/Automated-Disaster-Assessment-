@@ -40,7 +40,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
   const currentMap = maps[currentIndex]
   useEffect(() => {
     if (!currentMap) return
-    fetch('/harvey-geojson-3.geojson')
+    fetch(currentMap.overlay_url) //fetch GeoJSON from API overlay_url instead of local file
       .then(res => res.json())
       .then(data => setGeoData(data))
       .catch(err => console.error('Failed to fetch GeoJSON:', err))
