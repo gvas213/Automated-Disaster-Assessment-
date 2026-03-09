@@ -7,8 +7,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from openai import OpenAI
 from dotenv import load_dotenv
 
-from cropping import find_disaster_quartets, crop_buildings
-from prompt import DEFAULT_PROMPT, PROMPT_V1, PROMPT_V2, PROMPT_V3
+from cropping import find_disaster_quartets, crop_buildings, build_geojson
+from prompt import DEFAULT_PROMPT, PROMPT_V2, PROMPT_V2, PROMPT_V3
 
 load_dotenv()
 client = OpenAI()
@@ -32,7 +32,7 @@ def assess_damage(pre_crop_path: str, post_crop_path: str) -> dict:
         input=[{
             "role": "user",
             "content": [
-                {"type": "input_text", "text": PROMPT_V1},
+                {"type": "input_text", "text": PROMPT_V2},
                 {
                     "type": "input_image",
                     "image_url": f"data:image/png;base64,{pre_b64}",
@@ -93,6 +93,9 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
         json.dump(results, f, indent=2)
     print(f"Results saved to {output_path}")
 
+    # Save GeoJSON
+    build_geojson(post_json, results, f"{base}_vlm_results")
+
     return results
 
 
@@ -102,11 +105,11 @@ def main():
         print("No disaster quartets found.")
         sys.exit(1)
 
-    num_to_process = min(5, len(quartets))
+    num_to_process = min(3, len(quartets))
     print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 4 threads.")
 
     all_results = []
-    pool = ThreadPoolExecutor(max_workers=6)
+    pool = ThreadPoolExecutor(max_workers=15)
     try:
         futures = {}
         for i in range(num_to_process):

@@ -7,7 +7,7 @@ from google.genai import types
 from PIL import Image
 from dotenv import load_dotenv
 
-from cropping import find_disaster_quartets, crop_buildings
+from cropping import find_disaster_quartets, crop_buildings, build_geojson
 from prompt import PROMPT_V1
 
 load_dotenv()
@@ -72,6 +72,9 @@ def process_quartet(pre_img_path, post_img_path, post_json_path) -> list[dict]:
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
     print(f"Results saved to {output_path}")
+
+    # Save GeoJSON
+    build_geojson(post_json_path, results, f"{base}_gemini_results")
 
     return results
 

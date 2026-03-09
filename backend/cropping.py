@@ -7,7 +7,9 @@ from PIL import Image, ImageDraw
 DISASTER_IMAGES_DIR = os.path.join(os.path.dirname(__file__), "disaster-images")
 DISASTER_JSON_DIR = os.path.join(os.path.dirname(__file__), "disaster-json")
 CROP_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output_image")
+GEOJSON_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output-geojson")
 os.makedirs(CROP_OUTPUT_DIR, exist_ok=True)
+os.makedirs(GEOJSON_OUTPUT_DIR, exist_ok=True)
 
 
 def find_disaster_quartets() -> list[tuple[str, str, str, str]]:
@@ -107,6 +109,68 @@ def crop_buildings(pre_img_path, post_img_path, post_json_path) -> list[tuple[st
         results.append((pre_path, post_path, uid, subtype))
 
     return results
+
+
+def build_geojson(post_json_path: str, results: list[dict], output_name: str) -> str:
+    """Build a GeoJSON FeatureCollection from VLM results + source lng_lat polygons.
+
+    Args:
+        post_json_path: Path to the source post-disaster JSON (has lng_lat features).
+        results: List of prediction dicts with uid, predicted.feature_type, predicted.subtype.
+        output_name: Filename (without extension) for the output geojson.
+
+    Returns:
+        Path to the saved .geojson file.
+    """
+    with open(post_json_path) as f:
+        source = json.load(f)
+
+    # Build uid -> lng_lat WKT lookup
+    lnglat_by_uid = {}
+    for feat in source["features"]["lng_lat"]:
+        lnglat_by_uid[feat["properties"]["uid"]] = feat["wkt"]
+
+    features = []
+    for r in results:
+        uid = r["uid"]
+        wkt = lnglat_by_uid.get(uid)
+        if not wkt:
+            continue
+
+        coords = parse_wkt_polygon(wkt)
+        if not coords:
+            continue
+
+        # GeoJSON polygon: list of rings, each ring is list of [lon, lat]
+        ring = [[lon, lat] for lon, lat in coords]
+
+        feature = {
+            "type": "Feature",
+            "properties": {
+                "uid": uid,
+                "cost_usd": None,
+                "damage_type": r["predicted"]["subtype"],
+                "description": None,
+                "feature_type": r["predicted"]["feature_type"],
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [ring],
+            },
+        }
+        features.append(feature)
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+    output_path = os.path.join(GEOJSON_OUTPUT_DIR, f"{output_name}.geojson")
+    with open(output_path, "w") as f:
+        json.dump(geojson, f, indent=2)
+
+    print(f"GeoJSON saved to {output_path}")
+    return output_path
 
 
 if __name__ == "__main__":

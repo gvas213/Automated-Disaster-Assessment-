@@ -5,7 +5,7 @@ import sys
 import torch
 from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
 
-from cropping import find_disaster_quartets, crop_buildings
+from cropping import find_disaster_quartets, crop_buildings, build_geojson
 from prompt import DEFAULT_PROMPT
 
 DISASTER_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "disaster-output")
@@ -119,6 +119,9 @@ def process_quartet(processor, model, pre_img_path, post_img_path, post_json_pat
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
     print(f"Results saved to {output_path}")
+
+    # Save GeoJSON
+    build_geojson(post_json_path, results, f"{base}_hf_results")
 
     return results
 
