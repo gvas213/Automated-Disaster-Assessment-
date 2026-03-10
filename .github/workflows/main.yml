@@ -2,7 +2,7 @@ name: Deploy Frontend to EC2
 
 on:
   push:
-    branches: [initial-map]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
