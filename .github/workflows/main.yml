@@ -1,0 +1,60 @@
+name: Deploy Frontend to EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Sync files and build on EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/ec2_key.pem
+          chmod 600 ~/.ssh/ec2_key.pem
+
+      - name: Add EC2 to known_hosts
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Sync project to EC2 with rsync
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+        run: |
+          rsync -avz \
+            --exclude 'node_modules' \
+            --exclude '.git' \
+            --exclude '.env' \
+            -e "ssh -i ~/.ssh/ec2_key.pem" \
+            ./ ${EC2_USERNAME}@${EC2_HOST}:~/app
+
+      - name: Build frontend and restart service on EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+        run: |
+          ssh -i ~/.ssh/ec2_key.pem ${EC2_USERNAME}@${EC2_HOST} << 'EOF'
+            set -e
+
+            cd ~/app/frontend
+            npm ci
+            npm run build
+            sudo systemctl restart myapp.service
+            sudo systemctl status myapp.service --no-pager
+          EOF
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/ec2_key.pem
