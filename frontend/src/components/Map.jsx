@@ -121,6 +121,16 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
       .catch(err => console.error('Failed to fetch maps:', err))
   }, [])
 
+  // --- FETCH GEOJSON WHENEVER CURRENT MAP CHANGES ---
+  const currentMap = maps[currentIndex]
+  useEffect(() => {
+    if (!currentMap) return
+    fetch(currentMap.overlay_url) //fetch GeoJSON from API overlay_url instead of local file
+      .then(res => res.json())
+      .then(data => setGeoData(data))
+      .catch(err => console.error('Failed to fetch GeoJSON:', err))
+  }, [currentMap])
+
   // --- GEOJSON POLYGON STYLE ---
   // Color each polygon based on its damage_type property
   const getStyle = (feature) => {
