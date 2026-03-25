@@ -1,5 +1,6 @@
 import os
 import openai
+import json
 from pinecone import Pinecone, ServerlessSpec
 from pypdf import PdfReader
 import tiktoken
@@ -32,6 +33,43 @@ def extract_text_from_pdf(pdf_path):
         text += page.extract_text() + "\n"
     return text
 
+#extract from json files
+def extract_text_from_json(json_path):
+    with open(json_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+        if data.get("type") == "FeatureCollection":
+            chunks = []
+            for feature in data["features"]:
+                props = feature.get("properties", {})
+                
+                # skip entries with no useful damage info
+                if not props.get("damage_type") and not props.get("feature_type"):
+                    continue
+                
+                # pull coordinates to give location context
+                coords = feature.get("geometry", {}).get("coordinates", [[[]]])[0][0]
+                lat, lon = coords[1], coords[0]
+
+                # build a readable string per feature
+                chunk = (
+                    f"feature_type: {props.get('feature_type', 'unknown')} | "
+                    f"damage_type: {props.get('damage_type', 'unknown')} | "
+                    f"cost_usd: {props.get('cost_usd', 'unknown')} | "
+                    f"description: {props.get('description', 'none')} | "
+                    f"uid: {props.get('uid', 'unknown')} | "
+                    f"location: ({lat:.5f}, {lon:.5f})"
+                )
+                chunks.append(chunk)
+            return chunks
+
+        if isinstance(data, list):
+            return [" | ".join(f"{k}: {v}" for k, v in item.items()) for item in data]
+        
+        #single object catch (not likely to happen based on VLM outputs)
+        return [" | ".join(f"{k}: {v}" for k, v in data.items())]
+    
+
 #adjusted to chunk by paragraph
 #ignore headings/subheadings (no useful context)
 def chunk_text(text, max_tokens=500):
@@ -60,15 +98,21 @@ def embed(text):
 #traverse /docs for pdfs -> read and chunk pdfs as found
 # create vectors per chunk
 def ingest_pdfs(pdf_folder):
-    pdf_files = [f for f in os.listdir(pdf_folder) if f.endswith(".pdf")]
-    print(f"{len(pdf_files)} PDFs...")
+    all_files = [f for f in os.listdir(pdf_folder) if f.endswith(".pdf") or f.endswith(".json")  or f.endswith(".geojson")]
+    print(f"{len(all_files)} files found...")
 
-    for doc_id, filename in enumerate(pdf_files):
+    for doc_id, filename in enumerate(all_files):
         path = os.path.join(pdf_folder, filename)
         print(f"processing: {filename}")
 
-        text = extract_text_from_pdf(path)
-        chunks = chunk_text(text)
+        if filename.endswith(".pdf"):
+            text = extract_text_from_pdf(path)
+            chunks = chunk_text(text)
+        elif filename.endswith(".json") or filename.endswith(".geojson"):
+            chunks = extract_text_from_json(path)
+
+        
+        
 
         vectors = []
         for i, chunk in enumerate(chunks):
