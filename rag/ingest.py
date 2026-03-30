@@ -1,4 +1,6 @@
 import os
+import boto3
+import io
 import openai
 import json
 from pinecone import Pinecone, ServerlessSpec
@@ -12,6 +14,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 INDEX_NAME = os.getenv("PINECONE_INDEX")
+s3 = boto3.client("s3")
 
 #check if the pinecone index exists
 # if not create one
