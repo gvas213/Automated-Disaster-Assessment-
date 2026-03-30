@@ -46,6 +46,8 @@ def retrieve_context(query, top_k=4):
     sources = list(set([r["metadata"]["source"] for r in results["matches"]]))  #extract source file
     return chunks, sources
 
+#geocode addresses into long/lat for location search tool
+#uses OpenStreetMap
 async def geocode_address(address: str):
     """Convert a street address to lat/lon using OpenStreetMap Nominatim (free, no API key)"""
     url = "https://nominatim.openstreetmap.org/search"
@@ -54,6 +56,7 @@ async def geocode_address(address: str):
         "format": "json",
         "limit": 1
     }
+
     headers = {"User-Agent": "harvey-disaster-assessment-chatbot"}
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params, headers=headers)
@@ -64,45 +67,53 @@ async def geocode_address(address: str):
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Calculate distance in meters between two coordinates"""
-    R = 6371000  # earth radius in meters
+    R = 6371000 
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlambda = math.radians(lon2 - lon1)
     a = math.sin(dphi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda/2)**2
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-async def search_by_location(lat: float, lon: float, radius_meters: float = 20):
-    """Search Pinecone vectors for a precise coordinate match within a tight radius"""
-    # embed a location string to find matching vectors
-    location_query = f"location: ({lat:.5f}, {lon:.5f})"
+#used by location search tool if user gives lat and lon coordinates
+async def search_by_location(lat: float, lon: float, radius_meters: float = 500):
+    """Search for VLM assessments near a coordinate by fetching nearby vectors and filtering by distance"""
+    
+    #feature-type = type of building
+    #damage - none, minor, etc
+    location_query = f"feature_type damage location {lat:.5f} {lon:.5f}"
     query_embedding = embed(location_query)
     
     results = index.query(
         vector=query_embedding,
-        top_k=10,  # cast wider net then filter by distance
+        top_k=50, 
         include_metadata=True
     )
 
-    matches = []
+    #calculate actual distance for every result and sort by closest
+    candidates = []
     for r in results["matches"]:
         text = r["metadata"]["text"]
-        # extract stored coordinates from metadata text
         try:
-            loc_part = [p for p in text.split("|") if "location" in p][0]
+            parts = [p.strip() for p in text.split("|")]
+            loc_part = next((p for p in parts if p.startswith("location:")), None)
+            if not loc_part:
+                continue
             coords = loc_part.replace("location:", "").strip().strip("()")
-            stored_lat, stored_lon = map(float, coords.split(","))
+            stored_lat, stored_lon = [float(c.strip()) for c in coords.split(",")]
             distance = haversine_distance(lat, lon, stored_lat, stored_lon)
-            if distance <= radius_meters:  # strict match within 20 meters
-                matches.append({
-                    "text": text,
-                    "source": r["metadata"]["source"],
-                    "distance_meters": round(distance, 2)
-                })
+            candidates.append({
+                "text": text,
+                "source": r["metadata"]["source"],
+                "distance_meters": round(distance, 2)
+            })
         except Exception:
             continue
 
-    return matches
+    # sort by distance and return closest matches within radius
+    candidates.sort(key=lambda x: x["distance_meters"])
+    matches = [c for c in candidates if c["distance_meters"] <= radius_meters]
 
+    return matches
 
 # --- Tool Definitions ---
 TOOLS = [
@@ -156,7 +167,7 @@ TOOLS = [
     }
 ]
 
-#prompt - needs adjustment to use RAG as tool
+#prompt - may need adjustment for location queries (returning a lot of points)
 SYSTEM_PROMPT = """You are a disaster assessment assistant for Hurricane Harvey (2017). 
 You have access to news sources, official reports, and VLM-generated damage assessments for the affected area.
 
@@ -188,7 +199,7 @@ async def chat(request: ChatRequest):
         messages += request.chat_history
         messages.append({"role": "user", "content": request.message})
 
-        # first call — let OpenAI decide which tool to use if any
+        # first call — decide if tool is needed
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=messages,
@@ -204,7 +215,7 @@ async def chat(request: ChatRequest):
 
             for tool_call in response_message.tool_calls:
 
-                # --- RAG document search ---
+                #DOCUMENT SEARCH
                 if tool_call.function.name == "search_harvey_documents":
                     args = json.loads(tool_call.function.arguments)
                     chunks, sources = retrieve_context(args["query"])
@@ -215,7 +226,7 @@ async def chat(request: ChatRequest):
                         "content": context
                     })
 
-                # --- Location search ---
+                #LOCATION SEARCH
                 elif tool_call.function.name == "search_by_location":
                     args = json.loads(tool_call.function.arguments)
                     lat = args.get("latitude")
@@ -225,14 +236,17 @@ async def chat(request: ChatRequest):
                     if not lat or not lon:
                         address = args.get("address", "")
                         lat, lon = await geocode_address(address)
-
                     if lat and lon:
                         matches = await search_by_location(lat, lon)
                         if matches:
-                            content = "\n".join([m["text"] for m in matches])
+                            content = "\n".join([
+                                f"{m['text']} (distance: {m['distance_meters']}m)"
+                                for m in matches
+                            ])
                             sources = list(set([m["source"] for m in matches]))
                         else:
-                            content = f"No VLM assessment data found within 20 meters of ({lat:.5f}, {lon:.5f}). The location may not have been captured in the assessment."
+                            content = f"No assessment found within 500m of ({lat:.5f}, {lon:.5f}). This location may not have been assessed by the VLM."
+                            
                     else:
                         content = "Could not geocode the provided address. Please try providing lat/lon coordinates directly."
 
@@ -242,7 +256,7 @@ async def chat(request: ChatRequest):
                         "content": content
                     })
 
-            # second call — generate final answer with tool results
+            # second call — no tool needed
             final_response = openai.chat.completions.create(
                 model="gpt-4o",
                 messages=messages,
@@ -251,9 +265,8 @@ async def chat(request: ChatRequest):
             answer = final_response.choices[0].message.content
 
         else:
-            # no tool needed — answered directly
+            # no tool needed
             answer = response_message.content
-
         return ChatResponse(answer=answer, sources=sources)
 
     except Exception as e:
