@@ -11,5 +11,9 @@ disaster-images/
 disaster-json/
 cropped/
 disaster-output/
+accuracy/
+disaster-output-geojson/
 output_image/
 hf_models/
+disaster florence/
+*.7z

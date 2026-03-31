@@ -3,12 +3,14 @@ import json
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 
 from openai import OpenAI
 from dotenv import load_dotenv
 
 from cropping import find_disaster_quartets, crop_buildings, build_geojson
 from prompt import DEFAULT_PROMPT, PROMPT_V2, PROMPT_V2, PROMPT_V3
+from accuracy_log import log_accuracy
 
 load_dotenv()
 client = OpenAI()
@@ -104,11 +106,13 @@ def main():
     if not quartets:
         print("No disaster quartets found.")
         sys.exit(1)
-
     num_to_process = min(3, len(quartets))
-    print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 4 threads.")
+
+    print(f"Found {num_to_process} quartets, processing across 15 threads.")
+    time.sleep(2)  # Brief pause to let user read the message
 
     all_results = []
+    quartet_results = {}
     pool = ThreadPoolExecutor(max_workers=15)
     try:
         futures = {}
@@ -122,6 +126,7 @@ def main():
             try:
                 results = future.result()
                 all_results.extend(results)
+                quartet_results[name] = results
             except Exception as e:
                 print(f"\nERROR processing {name}: {e}")
     except KeyboardInterrupt:
@@ -137,6 +142,7 @@ def main():
     if all_results:
         correct = sum(1 for r in all_results if r["given"]["subtype"] == r["predicted"]["subtype"])
         print(f"\nOverall Accuracy: {correct}/{len(all_results)} ({100 * correct / len(all_results):.1f}%)")
+        log_accuracy("main", quartet_results, all_results)
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from cropping import find_disaster_quartets, crop_buildings, build_geojson
 from prompt import PROMPT_V1
+from accuracy_log import log_accuracy
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -86,9 +87,10 @@ def main():
         sys.exit(1)
 
     num_to_process = min(2, len(quartets))
-    print(f"Found {len(quartets)} quartets, processing first {num_to_process} across 3 threads.")
+    print(f"Found {num_to_process} quartets, processing first {num_to_process} across 3 threads.")
 
     all_results = []
+    quartet_results = {}
     pool = ThreadPoolExecutor(max_workers=3)
     try:
         futures = {}
@@ -102,6 +104,7 @@ def main():
             try:
                 results = future.result()
                 all_results.extend(results)
+                quartet_results[name] = results
             except Exception as e:
                 print(f"\nERROR processing {name}: {e}")
     except KeyboardInterrupt:
@@ -117,6 +120,7 @@ def main():
     if all_results:
         correct = sum(1 for r in all_results if r["given"]["subtype"] == r["predicted"]["subtype"])
         print(f"\nOverall Accuracy: {correct}/{len(all_results)} ({100 * correct / len(all_results):.1f}%)")
+        log_accuracy("gemini_api", quartet_results, all_results)
 
 
 if __name__ == "__main__":

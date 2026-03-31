@@ -74,3 +74,25 @@ Output ONLY a raw JSON object:
 
 Example:
 {"feature_type":"building","subtype":"major-damage"}"""
+
+FEATURE_DETECTION_PROMPT = """You are given two cropped satellite images of the same area. Image 1 is BEFORE a HURRICANE. Image 2 is AFTER the hurricane.
+
+The RED outline indicates the target structure. The outline is approximate — in the AFTER image the building may be offset or missing due to crop misalignment or actual damage. Use surrounding context (roads, driveways, neighboring roofs, tree lines) to track the same structure.
+
+Examine both images and answer each of the following questions with true or false. Return ONLY a raw JSON object (no markdown, no explanation).
+
+{
+  "roof_intact": true/false,           // Is the roof shape/texture largely unchanged between before and after?
+  "roof_partial_loss": true/false,     // Are there small/localized sections of the roof missing or peeled?
+  "roof_major_loss": true/false,       // Is a large portion (>50%) of the roof missing or stripped?
+  "building_displaced": true/false,    // Has the building shifted position or rotated compared to before?
+  "building_collapsed": true/false,    // Is there visible structural collapse (walls caved in, footprint deformed)?
+  "foundation_only": true/false,       // Is only the slab/foundation remaining where the building was?
+  "water_present": true/false,         // Is there standing water, dark blue/green discoloration, or waterlines visible around the structure?
+  "debris_minor": true/false,          // Is there minor scattered debris near the structure?
+  "debris_heavy": true/false,          // Is there a heavy debris field replacing or surrounding the structure?
+  "sediment_staining": true/false,     // Are there mud/sediment stains, scour marks, or flood residue visible?
+  "vegetation_damage": true/false,     // Are nearby trees toppled, stripped, or significantly damaged compared to before?
+  "structure_gone": true/false,        // Has the structure completely disappeared from the area?
+  "feature_type": "..."               // Type of structure: "building", "lot", "road", "bridge", etc.
+}"""

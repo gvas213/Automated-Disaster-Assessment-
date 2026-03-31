@@ -46,6 +46,7 @@ def padded_bbox(
     coords: list[tuple[float, float]],
     img_width: int,
     img_height: int,
+    # decrease padding | change outline
     padding: int = 150,
     min_size: int = 150,
 ) -> tuple[int, int, int, int]:
