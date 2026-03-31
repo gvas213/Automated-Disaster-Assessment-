@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { MapContainer, TileLayer, ImageOverlay, GeoJSON, useMap } from 'react-leaflet' // added useMap for FlyToLocation
 import { CustomZoomControl } from './MapControls'
 import { bindPopupHandlers } from './PolygonPopup'
+import { useMapNavigation } from './useMapNavigation'
 import 'leaflet/dist/leaflet.css'
 
 const DEFAULT_CENTER = [29.7597, -95.4568]
@@ -58,14 +59,14 @@ const getBoundsFromGeoJSON = (geoData) => {
 }
 
 // needs to live inside MapContainer to access the leaflet map instance via useMap()
-// flies to whichever tile was clicked in the grid
+// flies to whichever tile was clicked in the grid OR navigated to via arrow buttons
 function FlyToLocation({ target }) {
   const map = useMap()
   useEffect(() => {
     if (target) {
       map.flyTo(target.center, 17, { duration: 1.2 }) // zoom 17, 1.2s animation
     }
-  }, [target]) // re-runs when a new tile is clicked
+  }, [target, map]) // re-runs when a new tile is clicked or arrow is pressed
   return null
 }
 
@@ -75,9 +76,10 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
   const [showAfter, setShowAfter] = useState(false)
   const [mapData, setMapData] = useState({})
   const [showGrid, setShowGrid] = useState(false)  // toggles grid overlay open/closed
-  const [flyTarget, setFlyTarget] = useState(null) // stores center coords to fly to on tile click
+  const [flyTarget, setFlyTarget] = useState(null) // stores center coords to fly to on tile click or arrow press
 
   const activeLayerRef = useRef(null)
+  const stableOnTotalChange = useCallback((count) => onTotalChange(count), [onTotalChange])
 
   useEffect(() => {
     fetch('https://automated-disaster-assessment-backend.onrender.com/api/maps')
@@ -85,7 +87,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
       .then(data => {
         const allMaps = data.maps
         setMaps(allMaps)
-        onTotalChange(allMaps.length)
+        stableOnTotalChange(allMaps.length)
 
         allMaps.forEach(map => {
           fetch(map.overlay_url)
@@ -108,16 +110,10 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         })
       })
       .catch(err => console.error('Failed to fetch maps:', err))
-  }, [])
+  }, [stableOnTotalChange])
 
-  const currentMap = maps[currentIndex]
-  useEffect(() => {
-    if (!currentMap) return
-    fetch(currentMap.overlay_url)
-      .then(res => res.json())
-      .then(data => setGeoData(data))
-      .catch(err => console.error('Failed to fetch GeoJSON:', err))
-  }, [currentMap])
+  // arrow navigation: whenever currentIndex changes, fly to that tile's center
+  useMapNavigation(currentIndex, maps, mapData, setFlyTarget)
 
   const getStyle = (feature) => {
     const damage = feature?.properties?.damage_type
@@ -187,7 +183,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
       {/* -- GRID VIEW OVERLAY -- */}
       {/* full screen dark overlay on top of map, only renders when showGrid is true */}
       {showGrid && (
-        <div className="absolute inset-0 z-[10001] bg-black/80 backdrop-blur-sm overflow-auto p-6">
+        <div className="absolute inset-0 z-10001 bg-black/80 backdrop-blur-sm overflow-auto p-6">
           <div className="flex justify-between items-center mb-4">
             {/* only count tiles that actually have valid bounds */}
             <h2 className="text-white text-lg font-semibold">
