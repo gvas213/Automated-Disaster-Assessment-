@@ -17,3 +17,8 @@ output_image/
 hf_models/
 disaster florence/
 *.7z
+
+mexico-earthquake/
+mexico-eq/cropped/
+mexico-eq/output/ 
+mexico-eq/output-geojson/

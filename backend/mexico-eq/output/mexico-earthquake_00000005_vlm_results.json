@@ -1,0 +1,3126 @@
+[
+  {
+    "uid": "bec70db8-23e8-4c23-878a-e88fdaae6d47",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "af9afadc-b8c9-4eb7-9487-9412f9d05f29",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "0bee9b04-8e8b-480e-9eed-783ffc4a6a94",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "fb92384d-7736-4d0f-bad5-776a42867f09",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "bbd441e2-1651-4cbe-a0a8-4913bc5d5b42",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c7876346-b7cf-45b5-a9f4-543e395e2842",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "f86fecdc-8eb0-4df9-b388-0da8ab863af6",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "8b3bca11-36fe-4ed3-bef6-4864b2381d03",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "654cffdc-75f6-42d7-9ae0-311eac158b10",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "9fd1020c-8c27-4ccf-a620-a0474aa0615c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "87534a40-a4a2-4e3f-b7c5-1139b1ad3edc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "7d10a95c-f3b5-4599-a090-9bf5e121ce1e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "3bb22f38-0691-4d54-b503-6903d6b7cd17",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "0a28be8f-485f-4622-b9c9-3d36c2d135eb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "64982d1b-c43b-4fe5-95ca-6e70fdaee065",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "05373a0f-cb10-4b87-8eab-94902ddd7aeb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "dabde90e-b384-4513-acf6-64cf2b34ad16",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "26dee1e3-76d5-487f-baf8-287ccda80a56",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "parking lot",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "95c3b20e-a964-4058-b0b6-ef30f5e540c2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "abfbd7f4-e954-4a4d-bb15-2a5279c9a6ed",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "5f797c00-61a3-49c6-8247-117ee93319a3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "a3767984-89a0-4d00-82a8-46e4c9df68e8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "9a2098b6-c053-422b-8491-c600cc205d57",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "adb7cea3-d230-421b-a448-2b20684582e4",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "6c33a393-d0cc-49e4-a80f-bff906f4174d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "4050d7c7-ff99-4ae3-bd15-ac5d9ee59824",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "2eef5533-fd33-450d-b974-4ca64f936fc5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "7d965ed6-b351-4025-a642-42279db64161",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "2e8b9620-0825-49d6-a39d-23a782105bee",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "0a6de280-a747-47ab-a109-928c47bbd009",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "35750039-da97-4e8d-ac3c-63aa1b481b54",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "d7237f75-6841-4841-bb87-827fc59bcd70",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "dd4de5d4-efa2-46ba-98aa-b4d137071bc1",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "5a910ef9-3383-4225-b9c2-933e5c192dfb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "15349564-f5db-47b3-b2ad-4b3d0a7be82a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "ea30f3ae-394b-42ea-bb96-0f3aadf8299e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "48b7d1ec-10b6-4881-8e37-4635acd4ed66",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "548753d4-bd0e-4b6d-9baa-23d806ac5d52",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "513fe163-e936-4c22-a968-55a4cf13294c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "694398e5-ca34-4dd1-aefa-a06cf27e5003",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "61fee09e-8612-40fb-84d3-c4c73f60c7a9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "fa66b5f6-9f04-421d-9c29-5e3f38d8fb0e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "055030b1-6f04-45a5-b2bb-7523b01a7ffd",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "26c95740-f082-4361-923c-8acd92e43f6d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "97db0272-424b-4827-96e8-f1e94e57f321",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "e066defe-f994-4c8b-83a7-17f72c6eec9c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "be1995ac-4231-43fb-84bc-9ffd211777bb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "c399d2e6-1f8d-43dd-8b3d-a2b3455513cc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "89595bad-0169-4ee9-a18d-20a511d2b169",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "destroyed",
+      "subtype": "structure gone, replaced by rubble and debris"
+    }
+  },
+  {
+    "uid": "30bfc951-5ae8-415e-b315-7fb12b424998",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "32013110-5617-4bd2-88c0-1c005218d2a2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "5339ea8f-2c5d-41df-9579-fe7c6a7d013d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "6166292c-1619-4523-8ecd-9605caa1ec8e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "5b0769c2-242b-415d-842b-e0bff2070c8d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "a39d7107-68e0-4630-a854-4c5c905d2cac",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "2ab80886-591d-4917-a9a4-1b4d8e4f890d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "63de11f6-25b3-489a-b56a-534b86c5b44f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "9e96727f-3ba7-4341-bb64-7360c2559b12",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "4262b077-01d6-4376-ad7e-164dee81d758",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "dae5fc96-29d7-427b-a72e-133813197567",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a0c5f4aa-7dc2-4daa-9f21-42ff86e33bad",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "46e7486d-19d2-4a95-9df2-a5e0fa230ce2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "d8eeb923-3e02-41ee-869f-0e4efce500fb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "cbadf5ec-370e-4b81-9a56-2560ecf4cfd1",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "efc859d2-5d5a-4215-894d-ad1d9637ab29",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "4d295c23-c265-49d6-8a6d-741af38718e3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "f100bb50-c324-450c-be6f-86422b282438",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "c9bfcd5e-411d-4f8b-9663-d691b260ea79",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "80e2c663-cdc7-4b57-a4e9-03c34f0d4a04",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "d5975680-cfc5-4c98-9d1e-42e780279ecb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "a9b2544e-80e1-4b5e-a06c-ce3a42c6362f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "95f1eb6e-5b99-48cf-8c7b-7a3a16f7a9e5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "25cb9b42-e69b-4959-b852-1ed5a9d210db",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "fa505453-48b2-4ee6-a992-8f3c4e79c44c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "3b9b2d6e-a631-47d6-96ad-8129f4b6ea93",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "dedbd2a8-3b73-4df4-9745-50ec72e80334",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "9d75cdf0-1193-482a-8fa7-8a175eb12310",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "b9c5c131-c4ce-424b-85d9-2ea5ecc0f0d6",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "284ac941-2478-4cdf-a6a0-52fc7b1ded42",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "22e765a3-491a-41a5-b03d-a11eb7abec5f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "51ad3e3f-ebca-43ef-94d0-1e14f2ccc93c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "ed412596-8741-48ab-a03e-c365f53aa7bd",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "f6a5ecfe-1dd9-4d1b-872e-86d8718d298a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "49072bc2-09c5-4d8d-b606-cb4289ee48fc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "3ade3b4b-e572-4037-a933-ffb2c6acb0fb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "f0310876-afe8-4516-8909-b99f764804b9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "36e9c485-5a53-428f-a80c-1230be0f54ba",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "destroyed",
+      "subtype": "rubble field replacing structure"
+    }
+  },
+  {
+    "uid": "da77d042-5779-4873-a6f0-4a994392d3b5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "f8d8fec8-474c-4e87-b065-059614d29a33",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "83dcb9db-8ea7-477b-b171-4c49ef4d5d5e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "cbc0b677-b24f-4924-860b-48611e954b35",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "29cc136f-07fe-469e-80bf-9cc4791f7643",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "f75ac355-9008-4e93-b65c-1dde490f808f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "8308e226-4e92-48fb-8814-7674f609723b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "707b4181-49c7-4e50-b535-2fd3521d55a5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "98acc951-2891-4057-a9a5-7c2b6c1e10cf",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c4d574b5-e058-4b26-afeb-0c248974f10e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "ff31f18c-ae64-4770-bfae-f6b0c3ceabfa",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "42130974-3b0b-4930-89e3-cd763787a2b5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "02eea8ce-2b76-4e24-898d-0a90ac80ff7f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "f20a6daa-a646-4097-8736-2023d5479fe8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "96bea321-c0c6-45ba-9baa-6baf858e8ae7",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "a783230b-c76b-4e00-a5f5-cd2c65e3a810",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "7af32b13-0e7c-43aa-b939-47df9c48b0db",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "b8673af3-9c23-4e11-a44d-2cb346db1876",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "e3dadeef-0b21-4eef-a9c0-b507c9ea8418",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "831b20e2-8728-4923-a354-8fdb80b0e0e3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "939c67cc-f92e-41a9-96c9-02882833eff5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "0d3a3b76-f674-4187-ad6a-1efca38a77b9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "08ee3240-0e1a-4d5c-b093-aed1350d39ed",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "destroyed",
+      "subtype": "pancake collapse"
+    }
+  },
+  {
+    "uid": "0f51eb37-6341-4106-8059-8c79758386d4",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "086bde18-9a74-410b-ac17-8d89ee6fb802",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "bee396f8-31e6-4efa-968e-e2d2ed3f9936",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "bc981460-e98b-47a9-ab02-b5788d3d65a2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "a818945b-a1e0-4c17-b863-a40aa109d1b2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "5d541594-1914-4d5f-8d2d-43ed9e4ebdc7",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "882e8397-efbf-4171-9fab-b9dcd586b83c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "10d08cce-9476-4a05-87e1-e53ea8abc5d8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "e0ebf642-9978-4c08-becd-9cb84a2d88d7",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "1120e351-2a2b-4adf-b459-1fbe29f08edf",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "1758486f-2e44-46bf-96d4-fb7df8238b86",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "099982f3-2b3c-4b67-ac33-c4f967d22850",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "0b91a667-c228-42a1-b851-ac1b39110a26",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "bf966189-43da-4824-8bc7-0b772b6c366c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "64d0880e-8b86-49ee-b9a4-a9aa0362f0af",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "48232711-5883-46e2-b4be-1b3aad674e89",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "31abe1da-d1f7-455d-8886-1d17c1b17591",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "no-damage",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "ecd587ba-6987-43b7-b56f-2093194dd709",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "fec739ec-da93-4f59-99ec-124325b561d4",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "35b04440-6456-42a0-a5af-66063e328882",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "cd1875cb-4ba2-48f0-aaa6-781abf063c9a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "9137086e-caed-4467-8781-10932afc9814",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "f970f893-7e96-4905-88c7-984c4b072aa2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "1e4093d7-8d60-4f80-8e43-8bb06cdb3a21",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "e49846c8-d5a6-4c78-9f17-008d6a1d4e64",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "c516a6f7-90b6-4156-b05c-cf8d531c8f23",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "2f877f96-6a04-451b-a484-afcb7fecba4d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "7c18e1bc-8919-4575-9f4b-205c20598743",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "4a4e32d5-3782-46b9-956e-63ad77210f57",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "d1c27438-044a-4aeb-9e05-9706c7b34e35",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "de9dee37-5a3d-4a4b-ace6-20866e0fb506",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "7226f021-505a-4ee5-a441-019b783bd628",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "df620df5-bc6f-43d5-958d-240aa50f58c8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "ce013a90-c27d-4d97-b76e-e48ce3120eba",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "508a5f68-e00b-4529-8623-8d108d9c2e9a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "feff60d1-700a-4602-a9a6-d6bed3836d5d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a02983a3-d36b-4911-a786-e80588db3d36",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "8cedec1e-f15b-4268-bf14-ff7513f82b57",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "2d2a54b0-9c77-4b9d-a166-4bd86f1406c9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "be239b95-4fa2-49bf-8f5f-b6e4913fe8dd",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "aa33dff7-7557-454e-91af-3a3d6f2b4b98",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "ac64c3d0-5eeb-46f7-9629-3453ea88f1cb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "bd46bff9-ebaf-4603-bc69-b00432002d2c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "fc9a70c4-4e9b-479f-b9a6-8c82a1ea7529",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "4105bc7f-2503-4adc-aa29-854fded85e94",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "bde640a1-1ad4-48b7-bb98-f734b924f3dc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "3949708e-2e7d-4468-af07-f53aa06b2987",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "3d65bbb7-e6d5-432e-a69f-5f4049fac218",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "b401e516-8855-4341-afc7-eff1e11a9852",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "d6d46db3-5f33-45b6-ba9b-2e545635d46b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "7ebaa53a-4093-406a-bdd2-bf112d3b5dc3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "a7a5e169-a2eb-49db-95e2-08262a3d2a5e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "b82b0c00-d514-4040-bbd1-13b71bdc4390",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "970f1534-6965-46b1-9323-cfb2e18f97ab",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "f0d74dc2-b4b8-4546-a591-857bdfc67e41",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "9a41d573-25bf-4dd7-8e23-06d1df7f5aba",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "957104ad-ae3e-4ceb-9170-9a4987548bdb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "d7bac2f0-d51a-4ffd-b359-4496ee1e204f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "1b075dd3-cf13-435b-8183-fd4fa5f90ad8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "02229506-700c-4454-8789-0824ef6c6682",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "c15522f5-3ce9-479c-a317-143ae4c394b7",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "4b65d8db-1d8b-4f13-a6bf-4feb18b3491e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "8861bb27-c624-478b-bbe7-26203e31abce",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "2c076537-3fe9-4580-a80a-e0e5d759f9d9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "7bdbb12c-b773-4c2a-8eb4-e94b23370ead",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "fc02ec13-4380-4560-8390-780657dabab4",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a003cd2f-eaed-4f97-aca1-5d4c25e065e3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "35dd6165-b2b7-4cbc-8d0d-e5929f991454",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "4891eb4b-b312-4799-92be-1b1ebb92c3e5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "7523801f-8dc8-41ac-9959-d15db6f8c7e9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "d08f82af-f0ea-4027-bd5e-1bc4a057cb4b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "0fc534d4-763a-49f1-9880-b8a391c09836",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "2604f9d0-e496-4ed5-b7df-da2c1f5cf874",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "cd841612-4cc4-4be6-b07b-27a44bb86c40",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "destroyed",
+      "subtype": "structure gone or reduced to rubble"
+    }
+  },
+  {
+    "uid": "427d9564-5946-4e61-96ce-e7f6b35a16c0",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "d5937ad6-7586-475f-a652-82f576279d6a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "7d4c6cf3-b79d-4d99-ab7a-cb824bd12c9f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "4f0cf907-2801-46b9-9994-005b88dbe146",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential_building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c5cf91a2-ba2e-4c59-bd53-551b35b649ab",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "29f22059-8e66-45ca-aac8-d249aaf33e52",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "b79e6f9f-91c9-473e-aa0b-33152a26c2aa",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "65750b04-086e-4764-b83e-fe6218606fc4",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "08f38c49-ba39-438b-aac4-2c819a5126a2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "08f1766b-1398-47bb-a7fb-8911274e8889",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a5e502c3-712a-40af-b589-ddc0a0d281cd",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "9468a1d9-7ec6-4eb6-a7a3-a5d72a9d488e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "e35bcbc9-e34d-4df9-8c8e-5fbaf2e592c6",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "d095daa2-6326-46ca-aab0-c9a32ea064a6",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c16ce24a-e3a1-42cd-baca-49dd11a76b4d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "7d9450e8-7c2e-4480-a2e2-7e932ab122a8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "8c7108ae-d713-47d7-9a3b-a7f727ca51ed",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "4567fbc1-a50c-42c2-a41a-413a2102238a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "cd9ce358-343d-4cae-a4f7-db14fb369dae",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "e0933c33-ccfc-4f05-9509-394e7df36dcb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "8e0ab642-e37b-42be-9bc5-d1e920b9266d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "0675e83b-cd3e-43d7-b55e-ff3e03052224",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "45defa3f-37c4-4b1e-886d-e43b62789bb7",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "9d5a2ac6-1090-4606-b855-92afb4ce0085",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "5ce7c688-ffd0-436d-b4f8-196de9a4fefc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "e564a795-00de-493f-b5d5-906db719890b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "464b8031-4f06-4561-be76-88d2e8211f89",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c7e202ca-b169-4d57-8301-2e0ea3c0b197",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "e24ebd58-9d63-4fc1-961e-6384e479232c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "048cf212-5b48-44a2-961a-6f4acdc7d4e6",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "6639724f-2da7-422a-8cf0-3bf338711360",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "residential building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "7393b900-b902-4efc-8c79-231a5b059308",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "04e05ba1-9cd6-47b4-b5b9-bb724b1cfcfc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "62221b7d-6641-4a3a-9cbc-f38acb027970",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "176547dd-22f5-405b-85e7-9a7dc44d9099",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "51001af0-8c69-42d2-904b-df59401b3c2e",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "53e07ec4-32f1-4a96-a55e-044f372878fb",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "38642d1e-44f2-4a1c-8fd9-f8631e075fe6",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "75a72ab2-873a-41df-9e2d-4b15522ed8ba",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "25da65ba-623f-41af-a79e-77afffaf82b3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "a1604777-531a-43a4-a54f-d7499e5f192c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "31f93861-a9fa-4d2d-ae06-f1d4f28d21d3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "3dd710a5-f171-4ffc-809d-1e11818fe89a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "c18febbb-1cd3-4234-a036-d34b432ea11c",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "217a3346-98da-40d7-aec6-4bc25388a626",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "6d5eed32-0edc-41e6-899f-95de1ba2c4a2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "b77b234b-67d3-478e-b4a9-3befa64b6c54",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c96e9f9b-36da-41e2-bdf7-8b19e1f0054b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "f68ef9bc-b8c6-41c5-8a91-90289ba4b506",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "6a8cdffd-8583-4742-918d-35df25fb21d2",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "f0c3d5ea-c8a0-4242-b8f1-cca33bdc1096",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a9f14283-2b5b-4ee9-be66-91c744317652",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "bc1a8250-1d04-41c9-ad3e-f9d686de9ec9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "50888999-db04-4bac-bf05-7ab626c0fcb9",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "db61a07f-2a9d-4acd-91a4-d7504c25c923",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "eee3cd32-c8ea-47df-83fb-b84acc3c399a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "de0678a2-aa2c-4dc2-99c4-042cbd0a4054",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "250f20f9-edb3-4e70-a149-c777518e34af",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "fa3e02e8-ac7b-44cc-942b-cb2af732e1c1",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "f78bc6df-342f-462a-ab2a-2121a0cefdac",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "bcef5f4d-0fd0-4804-93ed-a5c3191a2a06",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "7503b1b1-ed2d-40ed-afd3-9485bbd2e02b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "b5c9103c-8840-4532-a32e-cdb62d28c919",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "87b96043-35cd-4e97-ab51-1f52be32a364",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "e2f063f8-32e8-407f-ad7c-886f92a40118",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "9a92943a-14eb-4dbc-8eda-d50935f33f60",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a4d857af-edd1-49ef-be84-3da37823b602",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "e88de8d2-99f6-4f46-9639-45653dfdca22",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "1a5c191c-98f3-4bcf-b45f-53b152ca0503",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "dee4a7c9-7318-4b2d-bfef-907dda6dcab8",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "8517c520-fff0-452f-8dc8-258c3b07bcb4",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "b358c96c-c551-4bb7-b3c1-06e3fb66bee0",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "11490bea-2c05-49ac-b14a-82287c85310f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "ede0af0b-ce59-4e30-b9e1-acb0adcd8e7b",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "c15676f6-1063-4ab0-91f0-f3a34ae9d974",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "6192ea66-32d5-464a-80fe-4644bad0f398",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "9d873b61-61f0-444b-9c22-9111dca34886",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "5a3347c0-d461-4a95-a4ff-fee14eaf17e3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "8bc58d1c-52a1-4ed4-a537-b0bfe79d4403",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "7a09dac0-fb61-4fa7-bad2-e8227642fd02",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "09a1eeb5-32ec-4425-b607-348521daf187",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "9dc3d782-dbc2-41bd-83c6-cf4231af774a",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "a6019d20-5934-4040-9dee-a7bd1df8513f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "72948d2c-be2a-4b76-b994-46974f1ec858",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "85df17f9-eec9-4340-9f28-46056357c582",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "c04f4b3e-874c-49e2-bd3a-85d8a0dcc4bc",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "955e3f4a-8e5c-4be2-8b16-bccac7fd6858",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "d8022e13-6975-485d-9269-f29899731361",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "90903b7b-95a9-48ab-a5d8-9b8d7c1d2c34",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "83076b64-f527-4f61-bc14-f6a5e30c8eb3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "fff656ea-01f8-4a6b-949a-c39b0b125ff5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "6d944fa2-7b5a-4b31-8982-733b3a6aad18",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "a02f8478-0b53-4990-8920-bc6a492f284f",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "structure",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "982741d5-81d6-49fa-b0e2-582cb74f1ff5",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "dab315d6-7a63-4508-adad-975881f8ec85",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "7a3ec8f8-2a6f-4f4b-aa8d-55723b5007a3",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "major-damage"
+    }
+  },
+  {
+    "uid": "a60a1b1e-6fc3-4e96-8cac-e1f45c7afbab",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "minor-damage"
+    }
+  },
+  {
+    "uid": "d2f8fd01-499e-456a-92ea-9dac30276eaa",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  },
+  {
+    "uid": "fe753360-e419-4ae5-9135-be75c248117d",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "destroyed"
+    }
+  },
+  {
+    "uid": "db83cc08-8b10-4b61-86d9-5860f07ab521",
+    "given": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    },
+    "predicted": {
+      "feature_type": "building",
+      "subtype": "no-damage"
+    }
+  }
+]

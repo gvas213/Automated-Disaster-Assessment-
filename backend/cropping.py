@@ -68,8 +68,11 @@ def padded_bbox(
     return max(0, x_min), max(0, y_min), min(img_width, x_max), min(img_height, y_max)
 
 
-def crop_buildings(pre_img_path, post_img_path, post_json_path) -> list[tuple[str, str, str, str]]:
+def crop_buildings(pre_img_path, post_img_path, post_json_path, padding: int = 150) -> list[tuple[str, str, str, str]]:
     """Crop each building from pre/post images using xy polygons in the post JSON.
+
+    Args:
+        padding: Pixel padding around each building polygon. Default 150.
 
     Returns list of (pre_crop_path, post_crop_path, uid, ground_truth_subtype).
     """
@@ -90,7 +93,7 @@ def crop_buildings(pre_img_path, post_img_path, post_json_path) -> list[tuple[st
         coords = parse_wkt_polygon(feat["wkt"])
         if not coords:
             continue
-        box = padded_bbox(coords, img_w, img_h)
+        box = padded_bbox(coords, img_w, img_h, padding=padding)
         x_min, y_min = box[0], box[1]
 
         pre_crop = pre_img.crop(box).copy()
