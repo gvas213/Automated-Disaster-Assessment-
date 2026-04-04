@@ -10,6 +10,13 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
+    # For EC2
+    "http://localhost:3001"
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:5173",
+    "http://3.137.184.48:3001",
+    "https://test.disaster.fit",
+    "http://test.disaster.fit",
 ]
 
 app.add_middleware(
