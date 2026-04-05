@@ -3,6 +3,7 @@ from typing import List, Optional, Union, Tuple
 
 class ChatRequest(BaseModel):
     message: str
+    chat_history: list[dict] = []
 
 class ChatResponse(BaseModel):
     reply: str
