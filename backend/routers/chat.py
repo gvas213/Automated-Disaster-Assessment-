@@ -1,5 +1,6 @@
 import os
 import openai
+import psycopg2
 import json 
 import math
 import httpx
@@ -11,10 +12,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-index = pc.Index(os.getenv("PINECONE_INDEX"))
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 router = APIRouter()
+
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL)
 
 #convert string to vector (same as what is used in ingest.py)
 def embed(text):
@@ -27,14 +30,24 @@ def embed(text):
 #search pinecone/DB for most relevant chunk(s)
 #using cosine similarity (gives top_k similar chunks)
 def retrieve_context(query, top_k=4):
+    """Search pgvector for most relevant chunks using cosine similarity"""
     query_embedding = embed(query)
-    results = index.query(
-        vector=query_embedding,
-        top_k=top_k,
-        include_metadata=True   #used for text and source (for testing can be removed later)
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT text, source
+        FROM documents
+        ORDER BY embedding <=> %s::vector
+        LIMIT %s
+        """,
+        (query_embedding, top_k)
     )
-    chunks = [r["metadata"]["text"] for r in results["matches"]]    #extract text from chunk
-    sources = list(set([r["metadata"]["source"] for r in results["matches"]]))  #extract source file
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    chunks = [row[0] for row in results]
+    sources = list(set([row[1] for row in results]))
     return chunks, sources
 
 #geocode addresses into long/lat for location search tool
@@ -67,23 +80,28 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 
 #used by location search tool if user gives lat and lon coordinates
 async def search_by_location(lat: float, lon: float, radius_meters: float = 500):
-    """Search for VLM assessments near a coordinate by fetching nearby vectors and filtering by distance"""
-    
-    #feature-type = type of building
-    #damage - none, minor, etc
+    """Search pgvector for VLM assessments near a coordinate"""
     location_query = f"feature_type damage location {lat:.5f} {lon:.5f}"
     query_embedding = embed(location_query)
-    
-    results = index.query(
-        vector=query_embedding,
-        top_k=50, 
-        include_metadata=True
-    )
 
-    #calculate actual distance for every result and sort by closest
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT text, source
+        FROM documents
+        ORDER BY embedding <=> %s::vector
+        LIMIT 50
+        """,
+        (query_embedding,)
+    )
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    # filter by actual distance
     candidates = []
-    for r in results["matches"]:
-        text = r["metadata"]["text"]
+    for text, source in results:
         try:
             parts = [p.strip() for p in text.split("|")]
             loc_part = next((p for p in parts if p.startswith("location:")), None)
@@ -94,17 +112,15 @@ async def search_by_location(lat: float, lon: float, radius_meters: float = 500)
             distance = haversine_distance(lat, lon, stored_lat, stored_lon)
             candidates.append({
                 "text": text,
-                "source": r["metadata"]["source"],
+                "source": source,
                 "distance_meters": round(distance, 2)
             })
         except Exception:
             continue
 
-    # sort by distance and return closest matches within radius
     candidates.sort(key=lambda x: x["distance_meters"])
-    matches = [c for c in candidates if c["distance_meters"] <= radius_meters]
+    return [c for c in candidates if c["distance_meters"] <= radius_meters]
 
-    return matches
 
 # --- Tool Definitions ---
 TOOLS = [
