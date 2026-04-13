@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, ImageOverlay, GeoJSON, useMap } from 'react-le
 import { CustomZoomControl } from './MapControls'
 import { bindPopupHandlers } from './PolygonPopup'
 import { useMapNavigation } from './useMapNavigation'
+import HurricanePath, { HurricanePathLegend } from './HurricanePath'
 import 'leaflet/dist/leaflet.css'
 
 const DEFAULT_CENTER = [29.7597, -95.4568]
@@ -70,8 +71,7 @@ function FlyToLocation({ target }) {
   return null
 }
 
-export default function Map({ currentIndex, onTotalChange, showPolygon }) {
-
+export default function Map({ currentIndex, onTotalChange, showPolygon, showHurricanePath, polygonMinZoom, onZoomChange }) {
   const [maps, setMaps] = useState([])
   const [showAfter, setShowAfter] = useState(false)
   const [mapData, setMapData] = useState({})
@@ -273,7 +273,12 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
             />
           )
         })}
+        {/* Hurricane Harvey track path */}
+        {showHurricanePath && <HurricanePath />}
       </MapContainer>
+
+      {/* Hurricane path legend (outside MapContainer so it's not a map layer) */}
+      {showHurricanePath && <HurricanePathLegend isOpen={showHurricanePath} />}
     </div>
   )
 }

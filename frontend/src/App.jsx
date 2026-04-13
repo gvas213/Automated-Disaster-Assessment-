@@ -8,7 +8,8 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0) // which map we're on
   const [total, setTotal] = useState(0)               // total maps from API
   const [showPolygon, setShowPolygon] = useState(true)
-
+  const [showHurricanePath, setShowHurricanePath] = useState(false)
+  
   return (
     <div className="h-screen w-screen overflow-hidden">
     <NavBar
@@ -19,11 +20,14 @@ function App() {
   onNext={() => setCurrentIndex(i => Math.min(total - 1, i + 1))}
   showPolygon={showPolygon}
   onPolygonToggle={() => setShowPolygon(v => !v)}
+  showHurricanePath={showHurricanePath}
+  onHurricanePathToggle={() => setShowHurricanePath(v => !v)}
 />
 <Map
   currentIndex={currentIndex}
   onTotalChange={setTotal}
   showPolygon={showPolygon}
+  showHurricanePath={showHurricanePath}
 />
       {chatOpen && <ChatBox onClose={() => setChatOpen(false)} />}
     </div>

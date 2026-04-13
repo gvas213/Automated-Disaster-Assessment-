@@ -12,7 +12,7 @@ const useFlash = () => {
 // --- PROPS ---
 // current, total, onPrev, onNext come from App.jsx
 // onChatToggle also comes from App.jsx
-export default function NavBar({ onChatToggle, current, total, onPrev, onNext, onPolygonToggle }) {
+export default function NavBar({ onChatToggle, current, total, onPrev, onNext, showPolygon, onPolygonToggle }) {
   const [prevClicked, flashPrev] = useFlash()
   const [nextClicked, flashNext] = useFlash()
   const [chatClicked, flashChat] = useFlash()
@@ -20,6 +20,7 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
   const [hideClicked, flashHide] = useFlash()
   const [showClicked, flashShow] = useFlash()
   const [layersClicked, flashLayers] = useFlash()
+  const [pathClicked, flashPath] = useFlash()
 
   const [isVisible, setIsVisible] = useState(true)
 
@@ -30,6 +31,7 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
   const handleShow = () => { flashShow(); setTimeout(() => setIsVisible(true), 250) }
   const handleChat = () => { flashChat(); if (typeof onChatToggle === 'function') onChatToggle() }
   const handleLayers = () => { flashLayers(); onPolygonToggle() }
+  const handlePath = () => { flashPath(); onHurricanePathToggle() }
   const iconBtn = (clicked) =>
     `transition-colors duration-200 ${clicked ? 'text-blue-500' : 'text-zinc-400 hover:text-black'}`
 
@@ -68,8 +70,16 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
     <path d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z" />
     <path d="m3.265 10.602 7.668 4.129a2.25 2.25 0 0 0 2.134 0l7.668-4.13 1.37.739a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l1.372-.738Z" />
     <path d="m10.933 19.231-7.668-4.13-1.37.739a.75.75 0 0 0 0 1.32l9.75 5.25c.221.12.491.12.712 0l9.75-5.25a.75.75 0 0 0 0-1.32l-1.37-.738-7.668 4.13a2.25 2.25 0 0 1-2.136-.001Z" />
-  </svg>
+    </svg>
 </button>
+
+            {/* Hurricane path toggle */}
+            <button onClick={handlePath} className={`${iconBtn(pathClicked)} ${showHurricanePath ? '!text-cyan-400' : ''}`} title="Toggle hurricane path">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6">
+                <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+              </svg>
+            </button>
+
 
             {/* Hide navbar — eye with slash */}
             <button onClick={handleHide} className={iconBtn(hideClicked)}>
