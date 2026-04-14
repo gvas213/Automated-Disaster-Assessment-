@@ -87,7 +87,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
 
   // --- FETCH ALL MAPS ON LOAD ---
   useEffect(() => {
-    fetch('https://automated-disaster-assessment-backend.onrender.com/api/maps')
+    fetch('/api/maps')
       .then(res => res.json())
       .then(data => {
         const allMaps = data.maps
