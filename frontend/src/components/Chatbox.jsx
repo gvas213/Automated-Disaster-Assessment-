@@ -2,11 +2,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 //states for the chatbox
 //messages track text of msg and isUser - whether msg sent by user or AI
-//ai ready - returns bool and determines if user can initiate a chat. Prevents input before puter has loaded
+//ai ready - returns bool and determines if user can initiate a chat
 //is loading - to handle input/output flow
 export default function ChatBox({ onClose }) {
   const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState(""); //current input field value - default null
+  const [inputValue, setInputValue] = useState("");
   const [aiReady, setAIReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,17 +17,11 @@ export default function ChatBox({ onClose }) {
   const startWidth = useRef(0);
 
   const messagesEndRef = useRef(null);  //used for autoscroll on new messages
+  const inputRef = useRef(null);        //used for auto-focus after sending
 
-  //testing puter readiness this will be replaces with out backend logic
+  // backend is always ready
   useEffect(() => {
-    const checkReady = setInterval(() => {
-      if (window.puter && window.puter.ai && typeof window.puter.ai.chat === "function") {
-        setAIReady(true);
-        clearInterval(checkReady);
-      }
-    }, 300);
-
-    return () => clearInterval(checkReady);
+    setAIReady(true);
   }, []);
 
   //set scrolling behavior for when the chat extends beyond the chatbox height
@@ -36,7 +30,6 @@ export default function ChatBox({ onClose }) {
   }, [messages]);
 
   // mouse move/up listeners for drag-to-resize
-  // attached to window so dragging outside the handle still works
   const handleMouseMove = useCallback((e) => {
     if (!isResizing.current) return;
     const delta = e.clientX - startX.current;
@@ -59,50 +52,57 @@ export default function ChatBox({ onClose }) {
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  // called when user presses down on the resize handle lip
   const handleResizeMouseDown = (e) => {
     e.preventDefault();
     isResizing.current = true;
     startX.current = e.clientX;
     startWidth.current = panelWidth;
     document.body.style.cursor = "ew-resize";
-    document.body.style.userSelect = "none"; //prevents text selection while dragging
+    document.body.style.userSelect = "none";
   };
 
-  //appends message based on if user or ai 
-  //assigns a random chat 'id' for tracking
+  //appends message based on if user or ai
   const addMessage = (content, isUser) => {
     setMessages((prev) => [...prev, { content, isUser, id: Date.now() + Math.random() }]);
   };
 
-  //handles sending messages to puter
-  //will be replaced with out backend logic
   const sendMessage = async () => {
-    //input validation
     const message = inputValue.trim();
     if (!message) return;
 
-    //blocks if ai isn't ready
     if (!aiReady) {
       addMessage("AI service still loading, please wait…", false);
       return;
     }
 
-    //appends message to list
     addMessage(message, true);
     setInputValue("");
+
+    // reset textarea height after clearing
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
+
     setIsLoading(true);
 
-    //TO BE REPLACED WITH BACKEND LOGIC
-    //right now this is sending messages to puter and waiting on response
-    //handles response validation
+    // refocus input after sending
+    setTimeout(() => inputRef.current?.focus(), 0);
+
+    // RAG backend integration
     try {
-      const response = await window.puter.ai.chat(message);
-      const reply =
-        typeof response === "string"
-          ? response
-          : response?.message?.content || "No reply received.";
-      addMessage(reply, false);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: message,
+          chat_history: messages.map((m) => ({
+            role: m.isUser ? "user" : "assistant",
+            content: m.content
+          }))
+        })
+      });
+      const data = await response.json();
+      addMessage(data.reply, false);
     } catch (err) {
       addMessage(`Error: ${err?.message || "Something went wrong"}`, false);
     } finally {
@@ -110,8 +110,7 @@ export default function ChatBox({ onClose }) {
     }
   };
 
-  //handle shift+enter - newline
-  //allows enter to send msg
+  // shift+enter = newline, enter = send
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -122,7 +121,6 @@ export default function ChatBox({ onClose }) {
   return (
     <div className="fixed inset-0 z-20000 pointer-events-none">
 
-      {/* Chatbox panel window width (width controlled by panelWidth state)*/} 
       <aside
         style={{ width: panelWidth, backgroundColor: "#1e1e1e" }}
         className="
@@ -146,12 +144,12 @@ export default function ChatBox({ onClose }) {
           </button>
         </div>
 
-        {/* Line Divider under header */}
+        {/* Divider */}
         <div className="h-px bg-white/10 shrink-0 mx-4" />
 
         <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
 
-          {/* Hide starting AI text after first message sent */}
+          {/* Empty state */}
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
               <p className="text-white text-xl font-semibold leading-snug">
@@ -160,15 +158,6 @@ export default function ChatBox({ onClose }) {
               <p className="text-white/40 text-sm leading-relaxed">
                 Ask me any questions about the disaster.
               </p>
-            </div>
-          )}
-
-        
-          {messages.length === 0 && !aiReady && (
-            <div className="flex justify-center mt-4">
-              <span className="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
-                Connecting to AI…
-              </span>
             </div>
           )}
 
@@ -190,7 +179,7 @@ export default function ChatBox({ onClose }) {
             </div>
           ))}
 
-          {/* Loading indicator on AI response */}
+          {/* Loading indicator */}
           {isLoading && (
             <div className="flex justify-start mb-3">
               <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-white/5 border border-white/10 text-white/60 text-sm flex items-center gap-2">
@@ -203,20 +192,27 @@ export default function ChatBox({ onClose }) {
           <div ref={messagesEndRef} />
         </div>
 
-       
+        {/* Input area */}
         <div className="shrink-0 px-4 pb-5 pt-3">
           <div
-            className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 pr-2 py-2"
+            className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 pr-2 py-2"
             style={{ minHeight: "52px" }}
           >
-            <input
-              type="text"
+            {/* textarea instead of input — auto-expands with content */}
+            <textarea
+              ref={inputRef}
+              rows={1}
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                e.target.style.height = "auto";
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
               onKeyDown={handleKeyDown}
               placeholder={aiReady ? "Ask anything" : "Connecting…"}
               disabled={!aiReady || isLoading}
-              className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder-white/30 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder-white/30 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed resize-none overflow-hidden"
+              style={{ lineHeight: "1.5", maxHeight: "160px", overflowY: "auto" }}
             />
 
             <button
@@ -228,7 +224,6 @@ export default function ChatBox({ onClose }) {
               {isLoading ? (
                 <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full" />
               ) : (
-                /* Send Icon Arrow */
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
                 </svg>
@@ -237,13 +232,12 @@ export default function ChatBox({ onClose }) {
           </div>
         </div>
 
-        {/* Resize handle lip */}
+        {/* Resize handle */}
         <div
           onMouseDown={handleResizeMouseDown}
           className="absolute top-0 right-0 h-full w-2 cursor-ew-resize flex items-center justify-center group"
           title="Drag to resize"
         >
-          {/* Visible grip pill appearing on hover */}
           <div className="w-1 h-12 rounded-full bg-white/20 group-hover:bg-white/60 transition-colors duration-150" />
         </div>
       </aside>
