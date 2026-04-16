@@ -38,7 +38,7 @@ jobs:
             --exclude '.git' \
             --exclude '.env' \
             -e "ssh -i ~/.ssh/ec2_key.pem" \
-            ./ ${EC2_USERNAME}@${EC2_HOST}:~/app
+            ./ ${EC2_USERNAME}@${EC2_HOST}:~/Automated-Disaster-Assessment-
 
       - name: Build frontend and restart service on EC2
         env:
@@ -48,7 +48,7 @@ jobs:
           ssh -i ~/.ssh/ec2_key.pem ${EC2_USERNAME}@${EC2_HOST} << 'EOF'
             set -e
 
-            cd ~/app/frontend
+            cd ~/Automated-Disaster-Assessment-/frontend
             npm ci
             npm run build
             sudo systemctl restart myapp.service
