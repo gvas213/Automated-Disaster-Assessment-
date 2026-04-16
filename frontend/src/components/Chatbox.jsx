@@ -4,8 +4,17 @@ import { useEffect, useRef, useState, useCallback } from "react";
 //messages track text of msg and isUser - whether msg sent by user or AI
 //ai ready - returns bool and determines if user can initiate a chat
 //is loading - to handle input/output flow
+const CHAT_STORAGE_KEY = "chat_messages";
+
 export default function ChatBox({ onClose }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem(CHAT_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const [inputValue, setInputValue] = useState("");
   const [aiReady, setAIReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +37,24 @@ export default function ChatBox({ onClose }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // persist messages across close/open within the tab session
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    } catch {
+      // ignore storage errors (e.g., quota exceeded, private mode)
+    }
+  }, [messages]);
+
+  const handleNewChat = () => {
+    setMessages([]);
+    try {
+      sessionStorage.removeItem(CHAT_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  };
 
   // mouse move/up listeners for drag-to-resize
   const handleMouseMove = useCallback((e) => {
@@ -135,13 +162,22 @@ export default function ChatBox({ onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <h2 className="text-base font-semibold text-white">Chat</h2>
-          <button
-            onClick={onClose}
-            className="text-white/50 hover:text-white transition text-lg leading-none"
-            aria-label="Close chat"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleNewChat}
+              className="text-white/50 hover:text-white transition text-sm"
+              aria-label="Start a new chat"
+            >
+              New Chat
+            </button>
+            <button
+              onClick={onClose}
+              className="text-white/50 hover:text-white transition text-lg leading-none"
+              aria-label="Close chat"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Divider */}
