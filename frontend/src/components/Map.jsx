@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef} from 'react'
-import { MapContainer, TileLayer, ImageOverlay, GeoJSON } from 'react-leaflet'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { MapContainer, TileLayer, ImageOverlay, GeoJSON, useMap } from 'react-leaflet' // added useMap for FlyToLocation
 import { CustomZoomControl } from './MapControls'
 import { bindPopupHandlers } from './PolygonPopup'
+import { useMapNavigation } from './useMapNavigation'
 import 'leaflet/dist/leaflet.css'
 
 const DEFAULT_CENTER = [29.7597, -95.4568]
@@ -14,31 +15,22 @@ const DAMAGE_COLORS = {
   'destroyed':    '#ef4444',
 }
 
-// Normalize shape map_bounds
 const normalizeBounds = (bounds) => {
   if (!bounds) return null
-
-  // Already [[lat,lng],[lat,lng]]
   if (Array.isArray(bounds) && Array.isArray(bounds[0])) {
     const [[lat1, lng1], [lat2, lng2]] = bounds
     if (lat1 == null || lng1 == null || lat2 == null || lng2 == null) return null
     return bounds
   }
-
-  // Object format: { sw: [lat, lng], ne: [lat, lng] }
   if (bounds.sw && bounds.ne) {
     return [bounds.sw, bounds.ne]
   }
-
-  // Flat array: [minLat, minLng, maxLat, maxLng]
   if (Array.isArray(bounds) && bounds.length === 4) {
     return [[bounds[0], bounds[1]], [bounds[2], bounds[3]]]
   }
-
   return null
 }
 
-// -- COMPUTING MAP IMAGE BOUNDS --
 const getBoundsFromGeoJSON = (geoData) => {
   if (!geoData || !geoData.features || geoData.features.length === 0) return null
 
@@ -48,66 +40,65 @@ const getBoundsFromGeoJSON = (geoData) => {
   geoData.features.forEach(feature => {
     const coords = feature.geometry?.coordinates
     if (!coords) return
-
-    // Flatten GeoJSON coordinates, nultiPolygon one extra level deeper than a regular Polygon since we only care abt [lng, lat] 
-    // Polygon: [ [ [lng,lat], [lng,lat], ... ] ] → flat(1) gives [[lng,lat], ...]
-    // MultiPolygon: [ [ [ [lng,lat], ... ] ] ]   → flat(2) gives [[lng,lat], ...]
     const flatCoords = feature.geometry.type === 'MultiPolygon'
       ? coords.flat(2)
       : coords.flat(1)
-
-    // For each corner point of a polygon we update the bounding box if it's a new extreme
-    // if any point is further in the direction then the previous --> update, & record outermost points
     flatCoords.forEach(([lng, lat]) => {
-      if (lat < minLat) minLat = lat // tracking southernmost point
-      if (lat > maxLat) maxLat = lat // tracking northernmost point
-      if (lng < minLng) minLng = lng // tracking westernmost point
-      if (lng > maxLng) maxLng = lng // tracking easternmost point
+      if (lat < minLat) minLat = lat
+      if (lat > maxLat) maxLat = lat
+      if (lng < minLng) minLng = lng
+      if (lng > maxLng) maxLng = lng
     })
   })
 
-  const PAD = 0.001 // padding for polygons no clipping @ edge 
-   
-  // Stretch the image overlay on map based on SW/NE corner for leaflet
+  const PAD = 0.001
   return [
-    [minLat - PAD, minLng - PAD], //Return SW corner  = (southernmost lat, westernmost lng)
-    [maxLat + PAD, maxLng + PAD], //Return NE corner = (northernmost lat, easternmost lng) 
+    [minLat - PAD, minLng - PAD],
+    [maxLat + PAD, maxLng + PAD],
   ]
+}
+
+// needs to live inside MapContainer to access the leaflet map instance via useMap()
+// flies to whichever tile was clicked in the grid OR navigated to via arrow buttons
+function FlyToLocation({ target }) {
+  const map = useMap()
+  useEffect(() => {
+    if (target) {
+      map.flyTo(target.center, 17, { duration: 1.2 }) // zoom 17, 1.2s animation
+    }
+  }, [target, map]) // re-runs when a new tile is clicked or arrow is pressed
+  return null
 }
 
 export default function Map({ currentIndex, onTotalChange, showPolygon }) {
 
-  // --- STATE ---
-  const [maps, setMaps] = useState([])       // all maps fetched from the API
-  const [showAfter, setShowAfter] = useState(false) // toggle: false = before, true = after
-  const [mapData, setMapData] = useState({}) // the GeoJSON damage polygon
+  const [maps, setMaps] = useState([])
+  const [showAfter, setShowAfter] = useState(false)
+  const [mapData, setMapData] = useState({})
+  const [showGrid, setShowGrid] = useState(false)  // toggles grid overlay open/closed
+  const [flyTarget, setFlyTarget] = useState(null) // stores center coords to fly to on tile click or arrow press
 
-  // Ref tracking whichever polygon tooltip is currently open
   const activeLayerRef = useRef(null)
+  const stableOnTotalChange = useCallback((count) => onTotalChange(count), [onTotalChange])
 
-  // --- FETCH ALL MAPS ON LOAD ---
   useEffect(() => {
     fetch('/api/maps')
       .then(res => res.json())
       .then(data => {
         const allMaps = data.maps
         setMaps(allMaps)
-        onTotalChange(allMaps.length) // giving no. maps to navbar
+        stableOnTotalChange(allMaps.length)
 
-        // Fetching all GeoJson at once, instead of one at a time 
         allMaps.forEach(map => {
-          fetch(map.overlay_url) // fetch GeoJSON from API overlay_url
+          fetch(map.overlay_url)
             .then(res => res.json())
             .then(geoData => {
-              
               let bounds = null
               if (map.map_bounds) {
                 bounds = normalizeBounds(map.map_bounds)
               } else {
-                bounds = getBoundsFromGeoJSON(geoData) //Compute geojson cords
+                bounds = getBoundsFromGeoJSON(geoData)
               }
-
-              // Storing images that gave valid bounds, does not compute images with no coords 
               if (bounds) {
                 setMapData(prev => ({
                   ...prev,
@@ -119,23 +110,14 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         })
       })
       .catch(err => console.error('Failed to fetch maps:', err))
-  }, [])
+  }, [stableOnTotalChange])
 
-  // --- FETCH GEOJSON WHENEVER CURRENT MAP CHANGES ---
-  const currentMap = maps[currentIndex]
-  useEffect(() => {
-    if (!currentMap) return
-    fetch(currentMap.overlay_url) //fetch GeoJSON from API overlay_url instead of local file
-      .then(res => res.json())
-      .then(data => setGeoData(data))
-      .catch(err => console.error('Failed to fetch GeoJSON:', err))
-  }, [currentMap])
+  // arrow navigation: whenever currentIndex changes, fly to that tile's center
+  useMapNavigation(currentIndex, maps, mapData, setFlyTarget)
 
-  // --- GEOJSON POLYGON STYLE ---
-  // Color each polygon based on its damage_type property
   const getStyle = (feature) => {
     const damage = feature?.properties?.damage_type
-    const fillColor = DAMAGE_COLORS[damage] || '#94a3b8' // gray if unknown
+    const fillColor = DAMAGE_COLORS[damage] || '#94a3b8'
     return {
       color:       fillColor,
       fillColor,
@@ -144,11 +126,9 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
     }
   }
 
-  // --- BIND HOVER + CLICK + POPUP EVENTS FOR EACH POLYGON ---
-  // Interaction logic is in bindPopupHandlers (PolygonPopup.jsx)
   const onEachFeature = (feature, layer) => {
     const damage = feature?.properties?.damage_type
-    const damageColor = DAMAGE_COLORS[damage] || '#94a3b8' // gray if unknown
+    const damageColor = DAMAGE_COLORS[damage] || '#94a3b8'
     bindPopupHandlers(feature, layer, activeLayerRef, damageColor)
   }
 
@@ -173,17 +153,25 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         }
       `}</style>
 
-      {/* PRE/POST TOGGLE BUTTON */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10000">
+      {/* PRE/POST TOGGLE + GRID VIEW BUTTON -- wrapped in flex so they sit side by side */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10000 flex gap-3">
         <button
           onClick={() => setShowAfter(prev => !prev)}
           className="border border-zinc-600 bg-black/30 backdrop-blur-md text-white text-sm px-6 py-2 rounded-full hover:bg-white hover:text-black hover:border-transparent transition-all duration-300"
         >
           {showAfter ? 'Viewing: Post-Harvey' : 'Viewing: Pre-Harvey'}
         </button>
+
+        {/* opens/closes the grid overlay */}
+        <button
+          onClick={() => setShowGrid(prev => !prev)}
+          className="border border-zinc-600 bg-black/30 backdrop-blur-md text-white text-sm px-6 py-2 rounded-full hover:bg-white hover:text-black hover:border-transparent transition-all duration-300"
+        >
+          {showGrid ? 'Close Grid' : 'Grid View'}
+        </button>
       </div>
 
-      {/* -- DEBUG OVERLAY —- */}
+      {/* -- DEBUG OVERLAY -- */}
       <div className="absolute top-20 left-4 z-10000 text-white text-xs bg-black/50 p-2 rounded space-y-1">
         <div>Total maps: {maps.length}</div>
         <div>Loaded tiles: {Object.keys(mapData).length}</div>
@@ -191,7 +179,56 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         <div>No polygons (bounds only): {Object.values(mapData).filter(d => !d.geoData?.features?.length).length}</div>
         <div>Missing/failed: {maps.length - Object.keys(mapData).length}</div>
       </div>
-      
+
+      {/* -- GRID VIEW OVERLAY -- */}
+      {/* full screen dark overlay on top of map, only renders when showGrid is true */}
+      {showGrid && (
+        <div className="absolute inset-0 z-10001 bg-black/80 backdrop-blur-sm overflow-auto p-6">
+          <div className="flex justify-between items-center mb-4">
+            {/* only count tiles that actually have valid bounds */}
+            <h2 className="text-white text-lg font-semibold">
+              All Image Tiles ({maps.filter(m => mapData[m.map_id]?.bounds).length})
+            </h2>
+            <button
+              onClick={() => setShowGrid(false)}
+              className="text-white border border-zinc-600 px-4 py-1 rounded-full hover:bg-white hover:text-black transition-all"
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-4">
+            {maps.map(map => {
+              const data = mapData[map.map_id]
+              if (!data?.bounds) return null // skip tiles that failed to load
+              return (
+                <div
+                  key={map.map_id}
+                  className="rounded overflow-hidden border border-zinc-700 bg-zinc-900 cursor-pointer hover:border-white transition-all"
+                  onClick={() => {
+                    // avg the SW + NE corners to get the center of this tile
+                    const center = [
+                      (data.bounds[0][0] + data.bounds[1][0]) / 2,
+                      (data.bounds[0][1] + data.bounds[1][1]) / 2,
+                    ]
+                    setFlyTarget({ center, id: map.map_id }) // triggers FlyToLocation
+                    setShowGrid(false) // close grid so map is visible
+                  }}
+                >
+                  {/* respects the current pre/post toggle */}
+                  <img
+                    src={showAfter ? map.images.after : map.images.before}
+                    alt={`Map ${map.map_id}`}
+                    className="w-full h-40 object-cover"
+                  />
+                  <div className="text-white text-xs p-2 truncate">ID: {map.map_id}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       <MapContainer
         center={DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
@@ -199,6 +236,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
         zoomControl={false}
       >
         <CustomZoomControl />
+        <FlyToLocation target={flyTarget} /> {/* inside MapContainer so it can access map instance */}
 
         {/* Dark base map */}
         <TileLayer
@@ -215,7 +253,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
           return (
             <ImageOverlay
               key={`img-${map.map_id}`}
-              url={showAfter ? map.images.after : map.images.before} // swap before/after on toggle
+              url={showAfter ? map.images.after : map.images.before}
               bounds={data.bounds}
               opacity={1}
             />
@@ -228,7 +266,7 @@ export default function Map({ currentIndex, onTotalChange, showPolygon }) {
           if (!data?.geoData) return null
           return (
             <GeoJSON
-              key={`geo-${map.map_id}-${showAfter}`} 
+              key={`geo-${map.map_id}-${showAfter}`}
               data={data.geoData}
               style={getStyle}
               onEachFeature={onEachFeature}
