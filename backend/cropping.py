@@ -148,13 +148,15 @@ def build_geojson(post_json_path: str, results: list[dict], output_name: str) ->
         # GeoJSON polygon: list of rings, each ring is list of [lon, lat]
         ring = [[lon, lat] for lon, lat in coords]
 
+        meta = next((v for k, v in r.items() if k.endswith("_meta")), None)
+
         feature = {
             "type": "Feature",
             "properties": {
                 "uid": uid,
                 "cost_usd": None,
                 "damage_type": r["predicted"]["subtype"],
-                "description": None,
+                "description": meta,
                 "feature_type": r["predicted"]["feature_type"],
             },
             "geometry": {
