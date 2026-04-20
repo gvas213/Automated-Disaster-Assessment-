@@ -6,3 +6,6 @@ psycopg2-binary
 httpx
 pinecone
 python-dotenv
+pillow
+numpy
+python-multipart
