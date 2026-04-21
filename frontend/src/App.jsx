@@ -8,6 +8,9 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0) // which map we're on
   const [total, setTotal] = useState(0)               // total maps from API
   const [showPolygon, setShowPolygon] = useState(true)
+  const [showHurricanePath, setShowHurricanePath] = useState(false)
+  const [polygonMinZoom, setPolygonMinZoom] = useState(15)
+  const [currentZoom, setCurrentZoom] = useState(15)
 
   return (
     <div className="h-screen w-screen overflow-hidden">
@@ -19,11 +22,19 @@ function App() {
   onNext={() => setCurrentIndex(i => Math.min(total - 1, i + 1))}
   showPolygon={showPolygon}
   onPolygonToggle={() => setShowPolygon(v => !v)}
+  currentZoom={currentZoom}
+  showHurricanePath={showHurricanePath}
+  onHurricanePathToggle={() => setShowHurricanePath(v => !v)}
+  polygonMinZoom={polygonMinZoom}
+  onPolygonMinZoomChange={setPolygonMinZoom}
 />
 <Map
   currentIndex={currentIndex}
   onTotalChange={setTotal}
   showPolygon={showPolygon}
+  showHurricanePath={showHurricanePath}
+  polygonMinZoom={polygonMinZoom}
+  onZoomChange={setCurrentZoom}
 />
       {chatOpen && <ChatBox onClose={() => setChatOpen(false)} />}
     </div>

@@ -12,7 +12,7 @@ const useFlash = () => {
 // --- PROPS ---
 // current, total, onPrev, onNext come from App.jsx
 // onChatToggle also comes from App.jsx
-export default function NavBar({ onChatToggle, current, total, onPrev, onNext, onPolygonToggle }) {
+export default function NavBar({ onChatToggle, current, total, onPrev, onNext, showPolygon, onPolygonToggle, currentZoom, showHurricanePath, onHurricanePathToggle, polygonMinZoom, onPolygonMinZoomChange }) {
   const [prevClicked, flashPrev] = useFlash()
   const [nextClicked, flashNext] = useFlash()
   const [chatClicked, flashChat] = useFlash()
@@ -20,8 +20,11 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
   const [hideClicked, flashHide] = useFlash()
   const [showClicked, flashShow] = useFlash()
   const [layersClicked, flashLayers] = useFlash()
+  const [pathClicked, flashPath] = useFlash()
+  const [settingsClicked, flashSettings] = useFlash()
 
   const [isVisible, setIsVisible] = useState(true)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   // --- BUTTON HANDLERS ---
   const handlePrev = () => { flashPrev(); onPrev() }   // flash + tell App to go back
@@ -30,6 +33,8 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
   const handleShow = () => { flashShow(); setTimeout(() => setIsVisible(true), 250) }
   const handleChat = () => { flashChat(); if (typeof onChatToggle === 'function') onChatToggle() }
   const handleLayers = () => { flashLayers(); onPolygonToggle() }
+  const handlePath = () => { flashPath(); onHurricanePathToggle() }
+  const handleSettings = () => { flashSettings(); setSettingsOpen(v => !v) }
   const iconBtn = (clicked) =>
     `transition-colors duration-200 ${clicked ? 'text-blue-500' : 'text-zinc-400 hover:text-black'}`
 
@@ -37,7 +42,7 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[10000] flex flex-col items-center gap-1">
 
       {isVisible && (
-        <nav className="border border-zinc-600 h-11 w-72 rounded-full bg-black/30 backdrop-blur-md hover:bg-white hover:border-transparent transition-all duration-300 flex items-center justify-between px-4 group">
+        <nav className="border border-zinc-600 h-11 w-80 rounded-full bg-black/30 backdrop-blur-md hover:bg-white hover:border-transparent transition-all duration-300 flex items-center justify-between px-4 group">
 
           {/* LEFT ARROW — disabled on first image */}
           <button onClick={handlePrev} disabled={current === 1} className={`${iconBtn(prevClicked)} disabled:opacity-20`}>
@@ -63,13 +68,27 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
             </button>
 
             {/* Polygon/layers toggle */}
-<button onClick={handleLayers} className={iconBtn(layersClicked)}>
+<button onClick={handleLayers} className={`transition-colors duration-200 ${layersClicked ? 'text-blue-500' : showPolygon ? 'text-green-400 hover:text-green-300' : 'text-red-400 hover:text-red-300'}`} title={showPolygon ? 'Property lines on' : 'Property lines off'}>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
     <path d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z" />
     <path d="m3.265 10.602 7.668 4.129a2.25 2.25 0 0 0 2.134 0l7.668-4.13 1.37.739a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l1.372-.738Z" />
     <path d="m10.933 19.231-7.668-4.13-1.37.739a.75.75 0 0 0 0 1.32l9.75 5.25c.221.12.491.12.712 0l9.75-5.25a.75.75 0 0 0 0-1.32l-1.37-.738-7.668 4.13a2.25 2.25 0 0 1-2.136-.001Z" />
   </svg>
 </button>
+
+            {/* Hurricane path toggle */}
+            <button onClick={handlePath} className={`${iconBtn(pathClicked)} ${showHurricanePath ? '!text-cyan-400' : ''}`} title="Toggle hurricane path">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6">
+                <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+              </svg>
+            </button>
+
+            {/* Settings */}
+            <button onClick={handleSettings} className={`${iconBtn(settingsClicked)} ${settingsOpen ? '!text-blue-400' : ''}`} title="Settings">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5">
+                <path fillRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 0 0-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 0 0-2.282.819l-.922 1.597a1.875 1.875 0 0 0 .432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 0 0 0 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 0 0-.432 2.385l.922 1.597a1.875 1.875 0 0 0 2.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 0 0 2.28-.819l.923-1.597a1.875 1.875 0 0 0-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 0 0 0-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 0 0-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 0 0-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 0 0-1.85-1.567h-1.843ZM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" clipRule="evenodd" />
+              </svg>
+            </button>
 
             {/* Hide navbar — eye with slash */}
             <button onClick={handleHide} className={iconBtn(hideClicked)}>
@@ -94,6 +113,36 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, o
 
       {/* Counter — now uses real current/total from App */}
       {isVisible && <span className="text-zinc-400 text-xs">{current} / {total}</span>}
+
+      {/* Zoom hint — only when polygons are on but zoom is too low */}
+      {isVisible && showPolygon && currentZoom < polygonMinZoom && (
+        <span className="text-yellow-300 text-xs bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full border border-yellow-500/30">
+          Zoom in to see property lines
+        </span>
+      )}
+
+      {/* Settings popup */}
+      {settingsOpen && isVisible && (
+        <div className="border border-zinc-600 bg-black/80 backdrop-blur-md rounded-xl p-4 mt-1" style={{ minWidth: '230px' }}>
+          <div className="text-white text-sm font-semibold mb-3">Settings</div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-white/70 text-xs">Property Lines Min Zoom</span>
+            <span className="text-white text-sm font-mono">{polygonMinZoom}</span>
+          </div>
+          <input
+            type="range"
+            min={10}
+            max={17}
+            value={polygonMinZoom}
+            onChange={(e) => onPolygonMinZoomChange(Number(e.target.value))}
+            className="w-full accent-blue-500"
+          />
+          <div className="flex justify-between text-white/30 text-[10px] mt-1">
+            <span>10 (far)</span>
+            <span>17 (close)</span>
+          </div>
+        </div>
+      )}
 
       {/* Restore button when navbar is hidden */}
       {!isVisible && (
