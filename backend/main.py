@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from routers import chat, maps
+from routers import chat, maps, assess
 
 app = FastAPI()
 
@@ -30,6 +30,7 @@ app.add_middleware(
 
 app.include_router(chat.router, prefix="/api")
 app.include_router(maps.router, prefix="/api")
+app.include_router(assess.router, prefix="/api")
 
 @app.get("/api/health")
 async def health():
