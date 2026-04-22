@@ -24,7 +24,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from v_client_1.prompts import DESCRIBE_PRE_PROMPT, DESCRIBE_DIFF_PROMPT, EVALUATE_POST_PROMPT, COST_PROMPT
 
 load_dotenv()
-client = OpenAI()
+
+_api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=_api_key) if _api_key else None
 
 MODEL = "gpt-4.1-mini"
 UPSCALE_FACTOR = 2

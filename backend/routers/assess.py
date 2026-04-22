@@ -2,10 +2,10 @@ import json
 import os
 import tempfile
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
-from v_client_1.client import assess_user_images
+from v_client_1.client import assess_user_images, client as vlm_client
 
 router = APIRouter()
 
@@ -19,6 +19,9 @@ async def assess(
         description='Optional JSON array of [x, y] pixel coords marking the building footprint. e.g. [[10,20],[100,20],[100,80],[10,80]]',
     ),
 ):
+    if vlm_client is None:
+        raise HTTPException(status_code=503, detail="OPENAI_API_KEY not set — assess endpoint is disabled.")
+
     coords = None
     if polygon_coords:
         raw = json.loads(polygon_coords)
