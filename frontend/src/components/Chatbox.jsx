@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-//states for the chatbox
-//messages track text of msg and isUser - whether msg sent by user or AI
-//ai ready - returns bool and determines if user can initiate a chat
-//is loading - to handle input/output flow
 const CHAT_STORAGE_KEY = "chat_messages";
 
-export default function ChatBox({ onClose }) {
+const SEVERITY_LABELS = {
+  'no-damage':    'No Damage',
+  'minor-damage': 'Minor Damage',
+  'major-damage': 'Major Damage',
+  'destroyed':    'Destroyed',
+}
+
+export default function ChatBox({ onClose, selectedFeature }) {
   const [messages, setMessages] = useState(() => {
     try {
       const stored = sessionStorage.getItem(CHAT_STORAGE_KEY);
@@ -18,45 +21,30 @@ export default function ChatBox({ onClose }) {
   const [inputValue, setInputValue] = useState("");
   const [aiReady, setAIReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // width state for resizable panel - default 360px, min 260px, max 720px
   const [panelWidth, setPanelWidth] = useState(360);
   const isResizing = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const messagesEndRef = useRef(null);  //used for autoscroll on new messages
-  const inputRef = useRef(null);        //used for auto-focus after sending
+  useEffect(() => { setAIReady(true); }, []);
 
-  // backend is always ready
-  useEffect(() => {
-    setAIReady(true);
-  }, []);
-
-  //set scrolling behavior for when the chat extends beyond the chatbox height
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // persist messages across close/open within the tab session
   useEffect(() => {
     try {
       sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
-    } catch {
-      // ignore storage errors (e.g., quota exceeded, private mode)
-    }
+    } catch {}
   }, [messages]);
 
   const handleNewChat = () => {
     setMessages([]);
-    try {
-      sessionStorage.removeItem(CHAT_STORAGE_KEY);
-    } catch {
-      // ignore
-    }
+    try { sessionStorage.removeItem(CHAT_STORAGE_KEY); } catch {}
   };
 
-  // mouse move/up listeners for drag-to-resize
   const handleMouseMove = useCallback((e) => {
     if (!isResizing.current) return;
     const delta = e.clientX - startX.current;
@@ -88,10 +76,33 @@ export default function ChatBox({ onClose }) {
     document.body.style.userSelect = "none";
   };
 
-  //appends message based on if user or ai
-  const addMessage = (content, isUser) => {
-    setMessages((prev) => [...prev, { content, isUser, id: Date.now() + Math.random() }]);
+  const addMessage = (content, isUser, isFeatureSummary = false) => {
+    setMessages((prev) => [...prev, { content, isUser, isFeatureSummary, id: Date.now() + Math.random() }]);
   };
+
+  // build a context string from the selected feature to inject into every message
+  const buildFeatureContext = (feature) => {
+    if (!feature) return null
+    const props = feature.properties
+    const severity = SEVERITY_LABELS[props.damage_type] || props.damage_type || 'Unknown'
+    const cost = props.cost_usd ? `$${Number(props.cost_usd).toLocaleString()}` : 'N/A'
+
+    let descriptionText = 'N/A'
+    if (props.description && typeof props.description === 'object') {
+      descriptionText = props.description.reasoning || props.description.diff_description || 'N/A'
+    } else if (props.description) {
+      descriptionText = props.description
+    }
+
+    return `The user has selected a specific damage assessment tile on the map. Here are its details:
+- Feature type: ${props.feature_type || 'Unknown'}
+- Damage type: ${severity}
+- Damage cost: ${cost}
+- UID: ${props.uid || 'Unknown'}
+- Assessment reasoning: ${descriptionText}
+
+Use this information to answer any follow-up questions about this specific tile.`
+  }
 
   const sendMessage = async () => {
     const message = inputValue.trim();
@@ -104,24 +115,22 @@ export default function ChatBox({ onClose }) {
 
     addMessage(message, true);
     setInputValue("");
-
-    // reset textarea height after clearing
-    if (inputRef.current) {
-      inputRef.current.style.height = "auto";
-    }
-
+    if (inputRef.current) inputRef.current.style.height = "auto";
     setIsLoading(true);
-
-    // refocus input after sending
     setTimeout(() => inputRef.current?.focus(), 0);
 
-    // RAG backend integration
+    //add selected feature to context
+    const featureContext = buildFeatureContext(selectedFeature)
+    const messageWithContext = featureContext
+      ? `${message}\n\n[Selected tile context: ${featureContext}]`
+      : message
+
     try {
       const response = await fetch(`/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: message,
+          message: messageWithContext,
           chat_history: messages.map((m) => ({
             role: m.isUser ? "user" : "assistant",
             content: m.content
@@ -137,7 +146,6 @@ export default function ChatBox({ onClose }) {
     }
   };
 
-  // shift+enter = newline, enter = send
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -145,9 +153,38 @@ export default function ChatBox({ onClose }) {
     }
   };
 
+  // build summary from selected feature
+  const renderFeatureSummary = () => {
+    if (!selectedFeature) return null
+    const props = selectedFeature.properties
+    const severity = SEVERITY_LABELS[props.damage_type] || props.damage_type || 'Unknown'
+    const cost = props.cost_usd ? `$${Number(props.cost_usd).toLocaleString()}` : 'N/A'
+
+    let reasoning = null
+    if (props.description && typeof props.description === 'object') {
+      reasoning = props.description.reasoning
+    }
+
+    return (
+      <div className="mx-4 mb-3 p-3 rounded-xl border border-white/10 bg-white/5">
+        <p className="text-white/60 text-xs font-semibold uppercase tracking-wide mb-2">
+          Selected Tile
+        </p>
+        <ul className="text-white/90 text-sm space-y-1">
+          <li>• <span className="text-white/50">Feature:</span> {props.feature_type || 'Unknown'}</li>
+          <li>• <span className="text-white/50">Damage:</span> {severity}</li>
+          <li>• <span className="text-white/50">Cost:</span> {cost}</li>
+          {reasoning && (
+            <li>• <span className="text-white/50">Assessment:</span> {reasoning}</li>
+          )}
+        </ul>
+        <p className="text-white/30 text-xs mt-2">Ask me anything about this tile</p>
+      </div>
+    )
+  }
+
   return (
     <div className="fixed inset-0 z-20000 pointer-events-none">
-
       <aside
         style={{ width: panelWidth, backgroundColor: "#1e1e1e" }}
         className="
@@ -183,21 +220,24 @@ export default function ChatBox({ onClose }) {
         {/* Divider */}
         <div className="h-px bg-white/10 shrink-0 mx-4" />
 
+        {/* Selected feature card*/}
+        {selectedFeature && renderFeatureSummary()}
+
         <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
 
-          {/* Empty state */}
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
               <p className="text-white text-xl font-semibold leading-snug">
                 What can I help with?
               </p>
               <p className="text-white/40 text-sm leading-relaxed">
-                Ask me any questions about the disaster.
+                {selectedFeature
+                  ? "Ask me anything about the selected tile."
+                  : "Ask me any questions about the disaster."}
               </p>
             </div>
           )}
 
-          {/* Render chat messages */}
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -215,7 +255,6 @@ export default function ChatBox({ onClose }) {
             </div>
           ))}
 
-          {/* Loading indicator */}
           {isLoading && (
             <div className="flex justify-start mb-3">
               <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-white/5 border border-white/10 text-white/60 text-sm flex items-center gap-2">
@@ -234,7 +273,6 @@ export default function ChatBox({ onClose }) {
             className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 pr-2 py-2"
             style={{ minHeight: "52px" }}
           >
-            {/* textarea instead of input — auto-expands with content */}
             <textarea
               ref={inputRef}
               rows={1}
@@ -245,7 +283,11 @@ export default function ChatBox({ onClose }) {
                 e.target.style.height = `${e.target.scrollHeight}px`;
               }}
               onKeyDown={handleKeyDown}
-              placeholder={aiReady ? "Ask anything" : "Connecting…"}
+              placeholder={
+                selectedFeature
+                  ? "Ask about this tile…"
+                  : aiReady ? "Ask anything" : "Connecting…"
+              }
               disabled={!aiReady || isLoading}
               className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder-white/30 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed resize-none overflow-hidden"
               style={{ lineHeight: "1.5", maxHeight: "160px", overflowY: "auto" }}

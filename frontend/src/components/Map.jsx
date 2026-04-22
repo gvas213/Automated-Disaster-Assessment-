@@ -126,7 +126,7 @@ function ViewportOverlays({ maps, mapData, showAfter, showPolygon, polygonMinZoo
   )
 }
 
-export default function Map({ currentIndex, onTotalChange, showPolygon, showHurricanePath, polygonMinZoom, onZoomChange }) {
+export default function Map({ currentIndex, onTotalChange, showPolygon, showHurricanePath, polygonMinZoom, onZoomChange, onFeatureSelect }) {
   const [maps, setMaps] = useState([])
   const [showAfter, setShowAfter] = useState(false)
   const [mapData, setMapData] = useState({})
@@ -171,6 +171,19 @@ export default function Map({ currentIndex, onTotalChange, showPolygon, showHurr
       .catch(err => console.error('Failed to fetch maps:', err))
   }, [stableOnTotalChange])
 
+  const onEachFeature = (feature, layer) => {
+    const damage = feature?.properties?.damage_type
+    const damageColor = DAMAGE_COLORS[damage] || '#94a3b8'
+    bindPopupHandlers(
+      feature,
+      layer,
+      activeLayerRef,
+      damageColor,
+      (f) => onFeatureSelect?.(f),  
+      () => onFeatureSelect?.(null)
+    )
+  }
+
   // arrow navigation: whenever currentIndex changes, fly to that tile's center
   useMapNavigation(currentIndex, maps, mapData, setFlyTarget)
 
@@ -187,11 +200,11 @@ export default function Map({ currentIndex, onTotalChange, showPolygon, showHurr
     }
   }
 
-  const onEachFeature = (feature, layer) => {
-    const damage = feature?.properties?.damage_type
-    const damageColor = DAMAGE_COLORS[damage] || '#94a3b8'
-    bindPopupHandlers(feature, layer, activeLayerRef, damageColor)
-  }
+  // const onEachFeature = (feature, layer) => {
+  //   const damage = feature?.properties?.damage_type
+  //   const damageColor = DAMAGE_COLORS[damage] || '#94a3b8'
+  //   bindPopupHandlers(feature, layer, activeLayerRef, damageColor)
+  // }
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
