@@ -78,7 +78,7 @@ export function buildPopupHTML(feature) {
 
 // --- BIND ALL POPUP INTERACTION HANDLERS TO A LAYER ---
 // Call this from onEachFeature in Map.jsx
-export function bindPopupHandlers(feature, layer, activeLayerRef, damageColor) {
+export function bindPopupHandlers(feature, layer, activeLayerRef, damageColor, onSelect, onDeselect) {
 
   // Binding Leaflet POPUP 
   layer.bindPopup(buildPopupHTML(feature), popupOptions)
@@ -104,6 +104,8 @@ export function bindPopupHandlers(feature, layer, activeLayerRef, damageColor) {
     layer.openPopup()
     activeLayerRef.current = layer
 
+    onSelect?.(feature)
+
     // --- X BUTTON CLOSE ---
     setTimeout(() => {
       const popupEl = layer.getPopup()?.getElement()
@@ -115,6 +117,8 @@ export function bindPopupHandlers(feature, layer, activeLayerRef, damageColor) {
           // Reset to default: colored border always visible
           layer.setStyle({ fillOpacity: 0.4, weight: 2, color: damageColor })
           activeLayerRef.current = null
+
+          onDeselect?.()
         }
       })
     }, 0)

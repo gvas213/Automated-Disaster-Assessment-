@@ -11,6 +11,7 @@ function App() {
   const [showHurricanePath, setShowHurricanePath] = useState(false)
   const [polygonMinZoom, setPolygonMinZoom] = useState(15)
   const [currentZoom, setCurrentZoom] = useState(15)
+  const [selectedFeature, setSelectedFeature] = useState(null) //which polygon is clicked
 
   return (
     <div className="h-screen w-screen overflow-hidden">
@@ -35,8 +36,11 @@ function App() {
   showHurricanePath={showHurricanePath}
   polygonMinZoom={polygonMinZoom}
   onZoomChange={setCurrentZoom}
+  onFeatureSelect={setSelectedFeature}
 />
-      {chatOpen && <ChatBox onClose={() => setChatOpen(false)} />}
+      {chatOpen && <ChatBox onClose={() => setChatOpen(false)} 
+      selectedFeature={selectedFeature}
+      />}
     </div>
   )
 }
