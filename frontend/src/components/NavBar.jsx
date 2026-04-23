@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import EvaluationPanel from './EvaluationPanel'
+import { createPortal } from 'react-dom'
 
 const useFlash = () => {
   const [active, setActive] = useState(false)
@@ -25,6 +27,7 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, s
 
   const [isVisible, setIsVisible] = useState(true)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [evalOpen, setEvalOpen] = useState(false)
 
   // --- BUTTON HANDLERS ---
   const handlePrev = () => { flashPrev(); onPrev() }   // flash + tell App to go back
@@ -60,21 +63,21 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, s
               </svg>
             </button>
 
-            {/* User icon */}
-            <button onClick={flashUser} className={iconBtn(userClicked)}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-7">
-                <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
+            {/* Evaluation icon */}
+            <button onClick={() => { flashUser(); setEvalOpen(v => !v) }} className={`${iconBtn(userClicked)} ${evalOpen ? '!text-blue-400' : ''}`} title="Model evaluation">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                <path fillRule="evenodd" d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.423.474L8.687 19.5h6.626l1.016 3.013a.75.75 0 1 0 1.423-.474L16.79 18.75H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.54 15h6.42l.5 1.5H8.29l.5-1.5Zm8.085-8.995a.75.75 0 1 0-.75-1.299 12.81 12.81 0 0 0-3.558 3.05L11.03 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l2.47-2.47 1.617 1.618a.75.75 0 0 0 1.146-.102 11.312 11.312 0 0 1 3.612-3.321Z" clipRule="evenodd" />
               </svg>
             </button>
 
             {/* Polygon/layers toggle */}
-<button onClick={handleLayers} className={`transition-colors duration-200 ${layersClicked ? 'text-blue-500' : showPolygon ? 'text-green-400 hover:text-green-300' : 'text-red-400 hover:text-red-300'}`} title={showPolygon ? 'Property lines on' : 'Property lines off'}>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-    <path d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z" />
-    <path d="m3.265 10.602 7.668 4.129a2.25 2.25 0 0 0 2.134 0l7.668-4.13 1.37.739a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l1.372-.738Z" />
-    <path d="m10.933 19.231-7.668-4.13-1.37.739a.75.75 0 0 0 0 1.32l9.75 5.25c.221.12.491.12.712 0l9.75-5.25a.75.75 0 0 0 0-1.32l-1.37-.738-7.668 4.13a2.25 2.25 0 0 1-2.136-.001Z" />
-  </svg>
-</button>
+            <button onClick={handleLayers} className={`transition-colors duration-200 ${layersClicked ? 'text-blue-500' : showPolygon ? 'text-green-400 hover:text-green-300' : 'text-red-400 hover:text-red-300'}`} title={showPolygon ? 'Property lines on' : 'Property lines off'}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                <path d="M11.644 1.59a.75.75 0 0 1 .712 0l9.75 5.25a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l9.75-5.25Z" />
+                <path d="m3.265 10.602 7.668 4.129a2.25 2.25 0 0 0 2.134 0l7.668-4.13 1.37.739a.75.75 0 0 1 0 1.32l-9.75 5.25a.75.75 0 0 1-.712 0l-9.75-5.25a.75.75 0 0 1 0-1.32l1.372-.738Z" />
+                <path d="m10.933 19.231-7.668-4.13-1.37.739a.75.75 0 0 0 0 1.32l9.75 5.25c.221.12.491.12.712 0l9.75-5.25a.75.75 0 0 0 0-1.32l-1.37-.738-7.668 4.13a2.25 2.25 0 0 1-2.136-.001Z" />
+              </svg>
+            </button>
 
             {/* Hurricane path toggle */}
             <button onClick={handlePath} className={`${iconBtn(pathClicked)} ${showHurricanePath ? '!text-cyan-400' : ''}`} title="Toggle hurricane path">
@@ -152,6 +155,12 @@ export default function NavBar({ onChatToggle, current, total, onPrev, onNext, s
             <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clipRule="evenodd" />
           </svg>
         </button>
+      )}
+
+      {/* Evaluation panel modal */}
+      {evalOpen && createPortal(
+        <EvaluationPanel onClose={() => setEvalOpen(false)} />,
+        document.body
       )}
 
     </div>
