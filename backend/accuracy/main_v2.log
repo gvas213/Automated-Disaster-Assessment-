@@ -1,0 +1,20 @@
+============================================================
+Run: 2026-03-12_17-59-36  |  Script: main_v2
+Quartets: 3  |  Buildings: 525
+Overall Accuracy: 100/525 (19.0%)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: 7/37 (18.9%)
+  hurricane-harvey_00000011_post_disaster.png: 57/225 (25.3%)
+  hurricane-harvey_00000018_post_disaster.png: 36/263 (13.7%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+  OK    major-damage -> major-damage    x2
+        minor-damage -> destroyed       x3
+        minor-damage -> major-damage    x3
+  OK    minor-damage -> minor-damage    x5
+        minor-damage -> no-damage       x1
+           no-damage -> destroyed       x55
+           no-damage -> major-damage    x97
+           no-damage -> minor-damage    x266
+  OK       no-damage -> no-damage       x93
+

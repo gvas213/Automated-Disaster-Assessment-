@@ -1,0 +1,23 @@
+============================================================
+Run: 2026-03-31_14-49-14  |  Script: main_v3_1
+Quartets: 3  |  Buildings: 525
+Exact Accuracy:   436/525 (83.0%)
+Partial Score:    463.0/525 (88.2%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 21/37 (56.8%) | partial 27.5/37 (74.3%)
+  hurricane-harvey_00000011_post_disaster.png: exact 188/225 (83.6%) | partial 198.0/225 (88.0%)
+  hurricane-harvey_00000018_post_disaster.png: exact 227/263 (86.3%) | partial 237.5/263 (90.3%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+        major-damage -> no-damage       x2
+        minor-damage -> no-damage       x12
+           no-damage -> destroyed       x3
+           no-damage -> major-damage    x62
+           no-damage -> minor-damage    x10
+  OK       no-damage -> no-damage       x436
+
+The model is heavily biased toward predicting "no-damage"
+It has high precision for "no-damage" (96.9%) but zero precision for damage classes
+Macro-average precision: ~24.2%
+Weighted precision (by prediction count): ~83.0% (dominated by no-damage)

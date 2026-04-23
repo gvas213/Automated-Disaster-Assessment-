@@ -24,7 +24,7 @@ from cropping import find_disaster_quartets, crop_buildings, build_geojson, pars
 from accuracy_log import log_accuracy
 from v4.upscale import upscale_image
 from v9.difference import compute_difference
-from v9.prompts import DESCRIBE_PRE_PROMPT, DESCRIBE_DIFF_PROMPT, EVALUATE_POST_PROMPT
+from v9.prompts import DESCRIBE_PRE_PROMPT, DESCRIBE_DIFF_PROMPT, EVALUATE_POST_PROMPT, COST_PROMPT
 
 load_dotenv()
 client = OpenAI()
@@ -66,6 +66,28 @@ def call_vlm(prompt: str, image_paths: list[str]) -> dict:
         raw = raw.rsplit("```", 1)[0]
 
     return json.loads(raw)
+
+
+def estimate_cost(damage_type: str, pre_description: str, reasoning: str) -> tuple[int, str]:
+    """Call VLM to estimate repair cost in USD. Returns (cost_usd, cost_reasoning)."""
+    if damage_type == "no-damage":
+        return 0, "No damage — no repair cost."
+
+    prompt = COST_PROMPT.format(
+        damage_type=damage_type,
+        pre_description=pre_description or "No description available.",
+        reasoning=reasoning or "No reasoning available.",
+    )
+    response = client.responses.create(
+        model=MODEL,
+        input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
+    )
+    raw = response.output_text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1]
+        raw = raw.rsplit("```", 1)[0]
+    result = json.loads(raw)
+    return int(result["cost_usd"]), result.get("cost_reasoning", "")
 
 
 def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[tuple[float, float]]) -> dict:
@@ -121,6 +143,14 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
 
     print(f"      Eval: {reasoning}")
 
+    # Stage 4: Estimate repair cost using image-derived context
+    try:
+        cost_usd, cost_reasoning = estimate_cost(subtype, pre_description, reasoning)
+    except Exception as e:
+        print(f"      Stage 4 (cost) failed: {e}")
+        cost_usd, cost_reasoning = None, f"error: {e}"
+    print(f"      Cost: ${cost_usd:,}" if cost_usd is not None else "      Cost: estimation failed")
+
     return {
         "feature_type": "building",
         "subtype": subtype,
@@ -128,6 +158,8 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
         "pre_description": pre_description,
         "diff_description": diff_description,
         "reasoning": reasoning,
+        "cost_usd": cost_usd,
+        "cost_reasoning": cost_reasoning,
     }
 
 
@@ -173,11 +205,13 @@ def process_building(pre_crop, post_crop, uid, ground_truth, gt_features, local_
             "feature_type": prediction["feature_type"],
             "subtype": prediction["subtype"],
         },
+        "cost_usd": prediction["cost_usd"],
         "v9_meta": {
             "confidence": prediction["confidence"],
             "pre_description": prediction["pre_description"],
             "diff_description": prediction["diff_description"],
             "reasoning": prediction["reasoning"],
+            "cost_reasoning": prediction["cost_reasoning"],
         },
     }
 

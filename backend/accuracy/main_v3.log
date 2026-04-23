@@ -1,0 +1,42 @@
+============================================================
+Run: 2026-03-31_14-11-59  |  Script: main_v3
+Quartets: 3  |  Buildings: 525
+Exact Accuracy:   508/525 (96.8%)
+Partial Score:    515.2/525 (98.1%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 25/37 (67.6%) | partial 30.5/37 (82.4%)
+  hurricane-harvey_00000011_post_disaster.png: exact 222/225 (98.7%) | partial 222.8/225 (99.0%)
+  hurricane-harvey_00000018_post_disaster.png: exact 261/263 (99.2%) | partial 262.0/263 (99.6%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+        major-damage -> no-damage       x2
+        minor-damage -> no-damage       x12
+           no-damage -> major-damage    x3
+  OK       no-damage -> no-damage       x508
+
+============================================================
+Run: 2026-03-31_14-36-29  |  Script: main_v3
+Quartets: 10  |  Buildings: 686
+Exact Accuracy:   623/686 (90.8%)
+Partial Score:    640.0/686 (93.3%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 25/37 (67.6%) | partial 30.5/37 (82.4%)
+  hurricane-harvey_00000011_post_disaster.png: exact 220/225 (97.8%) | partial 221.2/225 (98.3%)
+  hurricane-harvey_00000018_post_disaster.png: exact 259/263 (98.5%) | partial 260.5/263 (99.0%)
+  hurricane-harvey_00000023_post_disaster.png: exact 102/103 (99.0%) | partial 102.2/103 (99.3%)
+  hurricane-harvey_00000033_post_disaster.png: exact 15/25 (60.0%) | partial 19.5/25 (78.0%)
+  hurricane-harvey_00000036_post_disaster.png: exact 0/6 (0.0%) | partial 1.8/6 (29.2%)
+  hurricane-harvey_00000037_post_disaster.png: exact 0/2 (0.0%) | partial 0.2/2 (12.5%)
+  hurricane-harvey_00000044_post_disaster.png: exact 2/2 (100.0%) | partial 2.0/2 (100.0%)
+  hurricane-harvey_00000058_post_disaster.png: exact 0/2 (0.0%) | partial 0.2/2 (12.5%)
+  hurricane-harvey_00000062_post_disaster.png: exact 0/21 (0.0%) | partial 1.8/21 (8.3%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+           destroyed -> no-damage       x17
+        major-damage -> no-damage       x16
+        minor-damage -> no-damage       x22
+           no-damage -> major-damage    x8
+  OK       no-damage -> no-damage       x623
+

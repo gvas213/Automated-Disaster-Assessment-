@@ -1,0 +1,77 @@
+============================================================
+Run: 2026-03-12_17-34-20  |  Script: main
+Quartets: 3  |  Buildings: 525
+Overall Accuracy: 159/525 (30.3%)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: 9/37 (24.3%)
+  hurricane-harvey_00000011_post_disaster.png: 77/225 (34.2%)
+  hurricane-harvey_00000018_post_disaster.png: 73/263 (27.8%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+  OK    major-damage -> major-damage    x1
+        major-damage -> minor-damage    x1
+        minor-damage -> destroyed       x3
+        minor-damage -> major-damage    x4
+  OK    minor-damage -> minor-damage    x1
+        minor-damage -> no-damage       x4
+           no-damage -> building washed away with debris x1
+           no-damage -> destroyed       x110
+           no-damage -> footprint gone  x1
+           no-damage -> footprint gone or replaced by debris/slab x1
+           no-damage -> footprint gone replaced by debris x2
+           no-damage -> footprint gone replaced by debris and vegetation overgrowth x1
+           no-damage -> footprint gone, replaced by debris x1
+           no-damage -> footprint gone, replaced by debris and disturbed ground x1
+           no-damage -> footprint gone, replaced by debris and slab x2
+           no-damage -> footprint gone, replaced by debris/empty ground x1
+           no-damage -> footprint replaced by debris and displacement x1
+           no-damage -> footprint replaced by debris and slab x1
+           no-damage -> intact          x1
+           no-damage -> major-damage    x111
+           no-damage -> minor-damage    x115
+  OK       no-damage -> no-damage       x157
+           no-damage -> structure washed away and replaced by debris x1
+           no-damage -> substantial roof loss x2
+           no-damage -> substantial roof loss and deformation x1
+
+============================================================
+Run: 2026-03-12_18-10-32  |  Script: main
+Quartets: 3  |  Buildings: 525
+Exact Accuracy:   144/525 (27.4%)
+Partial Score:    238.8/525 (45.5%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 12/37 (32.4%) | partial 19.0/37 (51.4%)
+  hurricane-harvey_00000011_post_disaster.png: exact 60/225 (26.7%) | partial 101.5/225 (45.1%)
+  hurricane-harvey_00000018_post_disaster.png: exact 72/263 (27.4%) | partial 118.2/263 (45.0%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+  OK    major-damage -> major-damage    x1
+        major-damage -> minor-damage    x1
+        minor-damage -> destroyed       x4
+        minor-damage -> major-damage    x3
+  OK    minor-damage -> minor-damage    x3
+        minor-damage -> no-damage       x2
+           no-damage -> destroyed       x106
+           no-damage -> footprint and roof intact, consistent surroundings x1
+           no-damage -> footprint and roof intact, no visible damage x1
+           no-damage -> footprint gone or replaced by debris/slab x2
+           no-damage -> footprint gone or replaced by debris/slab; structure not standing x1
+           no-damage -> footprint gone replaced by debris/slab x1
+           no-damage -> footprint gone, debris field x1
+           no-damage -> footprint gone, replaced by debris and slab x1
+           no-damage -> footprint gone, replaced by debris and vegetation x1
+           no-damage -> footprint replaced by debris and overgrown vegetation x1
+           no-damage -> footprint/roof intact and consistent x2
+           no-damage -> intact          x1
+           no-damage -> limited roof damage x3
+           no-damage -> limited roof damage or small debris near roof x1
+           no-damage -> major-damage    x117
+           no-damage -> minor-damage    x123
+  OK       no-damage -> no-damage       x140
+           no-damage -> roof intact     x1
+           no-damage -> substantial roof loss x3
+           no-damage -> substantial roof loss, major deformation x1
+           no-damage -> wash-away/displacement x2
+           no-damage -> washed-away building with debris x1
+

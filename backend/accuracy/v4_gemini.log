@@ -1,0 +1,23 @@
+============================================================
+Run: 2026-03-31_15-27-29  |  Script: v4_gemini
+Quartets: 4  |  Buildings: 628
+Exact Accuracy:   458/628 (72.9%)
+Partial Score:    504.2/628 (80.3%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 13/37 (35.1%) | partial 19.8/37 (53.4%)
+  hurricane-harvey_00000011_post_disaster.png: exact 177/225 (78.7%) | partial 192.0/225 (85.3%)
+  hurricane-harvey_00000018_post_disaster.png: exact 188/263 (71.5%) | partial 206.5/263 (78.5%)
+  hurricane-harvey_00000023_post_disaster.png: exact 80/103 (77.7%) | partial 86.0/103 (83.5%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+  OK    major-damage -> major-damage    x1
+        major-damage -> no-damage       x1
+        minor-damage -> destroyed       x4
+        minor-damage -> major-damage    x4
+        minor-damage -> no-damage       x4
+           no-damage -> destroyed       x24
+           no-damage -> major-damage    x102
+           no-damage -> minor-damage    x31
+  OK       no-damage -> no-damage       x457
+

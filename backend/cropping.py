@@ -154,7 +154,7 @@ def build_geojson(post_json_path: str, results: list[dict], output_name: str) ->
             "type": "Feature",
             "properties": {
                 "uid": uid,
-                "cost_usd": None,
+                "cost_usd": r.get("cost_usd"),
                 "damage_type": r["predicted"]["subtype"],
                 "description": meta,
                 "feature_type": r["predicted"]["feature_type"],

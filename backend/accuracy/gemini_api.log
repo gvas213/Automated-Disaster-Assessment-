@@ -1,0 +1,20 @@
+============================================================
+Run: 2026-03-12_18-30-53  |  Script: gemini_api
+Quartets: 2  |  Buildings: 262
+Exact Accuracy:   60/262 (22.9%)
+Partial Score:    94.0/262 (35.9%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 5/37 (13.5%) | partial 9.8/37 (26.4%)
+  hurricane-harvey_00000011_post_disaster.png: exact 55/225 (24.4%) | partial 84.2/225 (37.4%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+  OK    major-damage -> major-damage    x1
+        major-damage -> no-damage       x1
+        minor-damage -> destroyed       x8
+        minor-damage -> major-damage    x2
+           no-damage -> destroyed       x93
+           no-damage -> major-damage    x73
+           no-damage -> minor-damage    x25
+  OK       no-damage -> no-damage       x59
+

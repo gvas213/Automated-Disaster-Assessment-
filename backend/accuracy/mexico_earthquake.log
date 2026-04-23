@@ -1,0 +1,37 @@
+============================================================
+Run: 2026-04-02_18-22-34  |  Script: mexico_earthquake
+Quartets: 3  |  Buildings: 1144
+Exact Accuracy:   257/1144 (22.5%)
+Partial Score:    364.0/1144 (31.8%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  mexico-earthquake_00000005_post_disaster.png: exact 72/284 (25.4%) | partial 101.0/284 (35.6%)
+  mexico-earthquake_00000006_post_disaster.png: exact 118/601 (19.6%) | partial 167.0/601 (27.8%)
+  mexico-earthquake_00000010_post_disaster.png: exact 67/259 (25.9%) | partial 96.0/259 (37.1%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+        minor-damage -> destroyed       x4
+        minor-damage -> major-damage    x1
+  OK    minor-damage -> minor-damage    x3
+           no-damage ->                 x1
+           no-damage -> building reduced to rubble x1
+           no-damage -> collapsed       x1
+           no-damage -> destroyed       x528
+           no-damage -> major-damage    x242
+           no-damage -> minor-damage    x90
+  OK       no-damage -> no-damage       x254
+           no-damage -> pancake collapse x1
+           no-damage -> partial floor collapse x1
+           no-damage -> partial structural failure x1
+           no-damage -> roof intact and consistent x1
+           no-damage -> rubble field replacing structure x4
+           no-damage -> rubble pile     x2
+           no-damage -> slight roof changes x1
+           no-damage -> structure gone or reduced to rubble x2
+           no-damage -> structure gone, replaced by rubble and debris x1
+           no-damage -> structure reduced to rubble x1
+           no-damage -> structure reduced to rubble and debris x1
+           no-damage -> structure reduced to rubble with roof collapse x1
+           no-damage -> structure reduced to rubble, building pancaked or collapsed entirely x1
+           no-damage -> substantial roof collapse x1
+

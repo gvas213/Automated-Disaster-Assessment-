@@ -12,9 +12,11 @@ import base64
 import json
 import os
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import openai
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -24,7 +26,7 @@ from cropping import crop_buildings, build_geojson, parse_wkt_polygon, padded_bb
 from accuracy_log import log_accuracy
 from v4.upscale import upscale_image
 from v9.difference import compute_difference
-from v9.prompts import DESCRIBE_PRE_PROMPT, DESCRIBE_DIFF_PROMPT, EVALUATE_POST_PROMPT
+from v9.prompts import DESCRIBE_PRE_PROMPT, DESCRIBE_DIFF_PROMPT, EVALUATE_POST_PROMPT, COST_PROMPT
 
 load_dotenv()
 client = OpenAI()
@@ -42,6 +44,21 @@ NOISE_THRESHOLD = 50
 AMPLIFY_FACTOR = 3.0
 QUARTET_WORKERS = 5
 BUILDING_WORKERS = 10
+
+
+class _StopProcessing(Exception):
+    """Raised on rate-limit / insufficient-quota to halt the pipeline cleanly."""
+
+
+_stop_event = threading.Event()
+_stop_reason: list[str | None] = [None]
+
+
+def _trigger_stop(reason: str) -> None:
+    if not _stop_event.is_set():
+        _stop_reason[0] = reason
+        _stop_event.set()
+        print(f"\n!! STOP SIGNAL: {reason}")
 
 
 def find_test_quartets() -> list[tuple[str, str, str, str]]:
@@ -68,6 +85,9 @@ def encode_image(path: str) -> str:
 
 
 def call_vlm(prompt: str, image_paths: list[str]) -> dict:
+    if _stop_event.is_set():
+        raise _StopProcessing(_stop_reason[0] or "stop signal")
+
     content = [{"type": "input_text", "text": prompt}]
     for img_path in image_paths:
         b64 = encode_image(img_path)
@@ -76,10 +96,14 @@ def call_vlm(prompt: str, image_paths: list[str]) -> dict:
             "image_url": f"data:image/png;base64,{b64}",
         })
 
-    response = client.responses.create(
-        model=MODEL,
-        input=[{"role": "user", "content": content}],
-    )
+    try:
+        response = client.responses.create(
+            model=MODEL,
+            input=[{"role": "user", "content": content}],
+        )
+    except openai.RateLimitError as e:
+        _trigger_stop(f"RateLimitError / insufficient_quota: {e}")
+        raise _StopProcessing(str(e)) from e
 
     raw = response.output_text.strip()
     if raw.startswith("```"):
@@ -87,6 +111,35 @@ def call_vlm(prompt: str, image_paths: list[str]) -> dict:
         raw = raw.rsplit("```", 1)[0]
 
     return json.loads(raw)
+
+
+def estimate_cost(damage_type: str, pre_description: str, reasoning: str) -> tuple[int, str]:
+    """Call VLM to estimate repair cost in USD. Returns (cost_usd, cost_reasoning)."""
+    if damage_type == "no-damage":
+        return 0, "No damage — no repair cost."
+
+    if _stop_event.is_set():
+        raise _StopProcessing(_stop_reason[0] or "stop signal")
+
+    prompt = COST_PROMPT.format(
+        damage_type=damage_type,
+        pre_description=pre_description or "No description available.",
+        reasoning=reasoning or "No reasoning available.",
+    )
+    try:
+        response = client.responses.create(
+            model=MODEL,
+            input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
+        )
+    except openai.RateLimitError as e:
+        _trigger_stop(f"RateLimitError / insufficient_quota: {e}")
+        raise _StopProcessing(str(e)) from e
+    raw = response.output_text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1]
+        raw = raw.rsplit("```", 1)[0]
+    result = json.loads(raw)
+    return int(result["cost_usd"]), result.get("cost_reasoning", "")
 
 
 def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[tuple[float, float]]) -> dict:
@@ -106,6 +159,8 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
     try:
         result = call_vlm(DESCRIBE_PRE_PROMPT, [pre_up])
         pre_description = result.get("description", "A building with a roof.")
+    except _StopProcessing:
+        raise
     except Exception as e:
         print(f"      Stage 1 failed: {e}")
         pre_description = "A building with a roof."
@@ -115,6 +170,8 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
     try:
         result = call_vlm(diff_prompt, [diff_path])
         diff_description = result.get("description", "Unable to analyze diff image.")
+    except _StopProcessing:
+        raise
     except Exception as e:
         print(f"      Stage 2 failed: {e}")
         diff_description = "Unable to analyze diff image."
@@ -129,6 +186,8 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
         subtype = result.get("subtype", "no-damage")
         confidence = float(result.get("confidence", 5))
         reasoning = result.get("reasoning", "")
+    except _StopProcessing:
+        raise
     except Exception as e:
         print(f"      Stage 3 failed: {e}")
         subtype = "no-damage"
@@ -137,6 +196,16 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
 
     print(f"      Eval: {reasoning}")
 
+    # Stage 4: Estimate repair cost
+    try:
+        cost_usd, cost_reasoning = estimate_cost(subtype, pre_description, reasoning)
+    except _StopProcessing:
+        raise
+    except Exception as e:
+        print(f"      Stage 4 (cost) failed: {e}")
+        cost_usd, cost_reasoning = None, f"error: {e}"
+    print(f"      Cost: ${cost_usd:,}" if cost_usd is not None else "      Cost: estimation failed")
+
     return {
         "feature_type": "building",
         "subtype": subtype,
@@ -144,6 +213,8 @@ def assess_building(pre_crop: str, post_crop: str, uid: str, local_coords: list[
         "pre_description": pre_description,
         "diff_description": diff_description,
         "reasoning": reasoning,
+        "cost_usd": cost_usd,
+        "cost_reasoning": cost_reasoning,
     }
 
 
@@ -188,11 +259,13 @@ def process_building(pre_crop, post_crop, uid, ground_truth, gt_features, local_
             "feature_type": prediction["feature_type"],
             "subtype": prediction["subtype"],
         },
+        "cost_usd": prediction["cost_usd"],
         "v9_meta": {
             "confidence": prediction["confidence"],
             "pre_description": prediction["pre_description"],
             "diff_description": prediction["diff_description"],
             "reasoning": prediction["reasoning"],
+            "cost_reasoning": prediction["cost_reasoning"],
         },
     }
 
@@ -207,6 +280,9 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
     base = os.path.splitext(os.path.basename(post_img))[0].replace("_post_disaster", "")
     print(f"\nProcessing: {base}")
 
+    if _stop_event.is_set():
+        raise _StopProcessing(_stop_reason[0] or "stop signal")
+
     crops = crop_buildings(pre_img, post_img, post_json)
 
     with open(post_json) as f:
@@ -216,7 +292,9 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
     building_polygons = extract_building_polygons(post_json)
 
     results = []
-    with ThreadPoolExecutor(max_workers=BUILDING_WORKERS) as pool:
+    stop_hit = False
+    pool = ThreadPoolExecutor(max_workers=BUILDING_WORKERS)
+    try:
         futures = {}
         for pre_crop, post_crop, uid, ground_truth in crops:
             local_coords = building_polygons.get(uid, [])
@@ -230,8 +308,19 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
             try:
                 entry = future.result()
                 results.append(entry)
+            except _StopProcessing:
+                stop_hit = True
+                for f in futures:
+                    f.cancel()
+                break
             except Exception as e:
                 print(f"\n  ERROR processing building {uid}: {e}")
+    finally:
+        pool.shutdown(wait=True, cancel_futures=True)
+
+    if stop_hit:
+        print(f"  Quartet {base} aborted ({len(results)} buildings completed before stop).")
+        raise _StopProcessing(_stop_reason[0] or "stop signal")
 
     output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_v9_test_openai_results.json")
     with open(output_path, "w") as f:
@@ -243,14 +332,29 @@ def process_quartet(pre_img, post_img, post_json) -> list[dict]:
     return results
 
 
+def _is_quartet_done(post_img: str) -> bool:
+    """A quartet is considered done if its results JSON is already on disk."""
+    base = os.path.splitext(os.path.basename(post_img))[0].replace("_post_disaster", "")
+    output_path = os.path.join(DISASTER_OUTPUT_DIR, f"{base}_v9_test_openai_results.json")
+    return os.path.exists(output_path)
+
+
 def main():
-    quartets = find_test_quartets()
-    if not quartets:
+    all_quartets = find_test_quartets()
+    if not all_quartets:
         print(f"No disaster quartets found in {TEST_IMAGES_DIR}")
         sys.exit(1)
 
+    # Resume: skip quartets whose results JSON already exists on disk.
+    quartets = [q for q in all_quartets if not _is_quartet_done(q[1])]
+    skipped = len(all_quartets) - len(quartets)
+
+    if not quartets:
+        print(f"All {len(all_quartets)} quartets already have results on disk — nothing to do.")
+        sys.exit(0)
+
     num_to_process = len(quartets)
-    print(f"Found {len(quartets)} test quartets, processing all {num_to_process}.")
+    print(f"Found {len(all_quartets)} test quartets. Skipping {skipped} already completed. Processing {num_to_process}.")
     print("v9 Test OpenAI: 3-stage CoT + masked diff on held-out disaster_harvey_test set")
     print(f"Model: {MODEL} | Upscale: {UPSCALE_FACTOR}x | Noise threshold: {NOISE_THRESHOLD} | Amplify: {AMPLIFY_FACTOR}x")
     print(f"Workers: {QUARTET_WORKERS} quartets x {BUILDING_WORKERS} buildings")
@@ -258,10 +362,11 @@ def main():
 
     all_results = []
     quartet_results = {}
+    stopped = False
 
     pool = ThreadPoolExecutor(max_workers=QUARTET_WORKERS)
+    futures: dict = {}
     try:
-        futures = {}
         for i in range(num_to_process):
             pre_img, post_img, pre_json, post_json = quartets[i]
             future = pool.submit(process_quartet, pre_img, post_img, post_json)
@@ -273,6 +378,12 @@ def main():
                 results = future.result()
                 all_results.extend(results)
                 quartet_results[name] = results
+            except _StopProcessing:
+                stopped = True
+                print(f"\n!! Aborting: rate limit / insufficient credits detected while processing {name}")
+                for f in futures:
+                    f.cancel()
+                break
             except Exception as e:
                 print(f"\nERROR processing {name}: {e}")
     except KeyboardInterrupt:
@@ -280,16 +391,26 @@ def main():
         for future in futures:
             future.cancel()
         pool.shutdown(wait=False, cancel_futures=True)
-        sys.exit(1)
+        stopped = True
     finally:
-        pool.shutdown(wait=True)
+        pool.shutdown(wait=True, cancel_futures=True)
+
+    print(f"\n{'='*60}")
+    if stopped:
+        reason = _stop_reason[0] or "user interrupt"
+        print(f"RUN ABORTED: {reason}")
+    print(f"Quartets finished: {len(quartet_results)}/{num_to_process}")
 
     if all_results:
         correct = sum(1 for r in all_results if r["given"]["subtype"] == r["predicted"]["subtype"])
         total = len(all_results)
-        print(f"\n{'='*60}")
         print(f"Overall Accuracy: {correct}/{total} ({100 * correct / total:.1f}%)")
         log_accuracy("v9_test_openai", quartet_results, all_results)
+    else:
+        print("No building results collected — nothing to log.")
+
+    if stopped:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

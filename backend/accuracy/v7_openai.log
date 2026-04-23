@@ -1,0 +1,21 @@
+============================================================
+Run: 2026-04-15_21-45-35  |  Script: v7_openai
+Quartets: 3  |  Buildings: 525
+Exact Accuracy:   241/525 (45.9%)
+Partial Score:    366.0/525 (69.7%)
+  (exact=1.0, off-by-1=0.5, off-by-2=0.25, off-by-3=0.0)
+------------------------------------------------------------
+  hurricane-harvey_00000003_post_disaster.png: exact 15/37 (40.5%) | partial 25.2/37 (68.2%)
+  hurricane-harvey_00000011_post_disaster.png: exact 101/225 (44.9%) | partial 158.0/225 (70.2%)
+  hurricane-harvey_00000018_post_disaster.png: exact 125/263 (47.5%) | partial 182.8/263 (69.5%)
+------------------------------------------------------------
+Confusion (ground_truth -> predicted):
+  OK    major-damage -> major-damage    x2
+        minor-damage -> major-damage    x1
+  OK    minor-damage -> minor-damage    x6
+        minor-damage -> no-damage       x5
+           no-damage -> destroyed       x3
+           no-damage -> major-damage    x62
+           no-damage -> minor-damage    x213
+  OK       no-damage -> no-damage       x233
+
