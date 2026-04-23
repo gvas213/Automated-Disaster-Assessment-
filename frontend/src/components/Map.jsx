@@ -71,12 +71,20 @@ function FlyToLocation({ target }) {
   return null
 }
 // Only renders overlays whose bounds intersect the current map viewport
-function ViewportOverlays({ maps, mapData, showAfter, showPolygon, polygonMinZoom, getStyle, onEachFeature, onZoomChange }) {
+function ViewportOverlays({ maps, mapData, showAfter, showPolygon, polygonMinZoom, getStyle, onEachFeature, onZoomChange, activeLayerRef, onFeatureSelect }) {
   const map = useMap()
   const [visibleBounds, setVisibleBounds] = useState(() => map.getBounds())
   const [zoom, setZoom] = useState(() => map.getZoom())
 
   useMapEvents({
+    click: () => {
+      if (activeLayerRef?.current) {
+        activeLayerRef.current.closePopup()
+        activeLayerRef.current.setStyle({ fillOpacity: 0.4, weight: 2 })
+        activeLayerRef.current = null
+        onFeatureSelect?.(null)
+      }
+    },
     moveend: () => {
       setVisibleBounds(map.getBounds())
       const newZoom = map.getZoom()
@@ -330,6 +338,8 @@ export default function Map({ currentIndex, onTotalChange, showPolygon, showHurr
           getStyle={getStyle}
           onEachFeature={onEachFeature}
           onZoomChange={onZoomChange}
+          activeLayerRef={activeLayerRef}
+          onFeatureSelect={onFeatureSelect}
         />
 
         {/* Hurricane Harvey track path */}

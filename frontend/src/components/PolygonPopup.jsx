@@ -98,6 +98,7 @@ export function bindPopupHandlers(feature, layer, activeLayerRef, damageColor, o
       activeLayerRef.current.closePopup()
       // Reset previous layer to default: colored border always visible
       activeLayerRef.current.setStyle({ fillOpacity: 0.4, weight: 2, color: damageColor })
+      onDeselect?.()
     }
 
     // Open this layer's popup and mark it as active

@@ -99,47 +99,89 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 #used by location search tool if user gives lat and lon coordinates
-async def search_by_location(lat: float, lon: float, radius_meters: float = 500):
-    """Search pgvector for VLM assessments near a coordinate"""
-    location_query = f"feature_type damage location {lat:.5f} {lon:.5f}"
-    query_embedding = embed(location_query)
 
+async def search_by_location(lat: float, lon: float, radius_meters: float = 500):
+    """Search pgvector for VLM assessments near a coordinate using direct SQL distance calculation"""
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(
-        """
-        SELECT text, source
+    
+    # extract coordinates directly from text and calculate distance in SQL
+    cur.execute("""
+        SELECT text, source,
+            (
+                6371000 * 2 * ASIN(SQRT(
+                    POWER(SIN(RADIANS(
+                        CAST(SPLIT_PART(SPLIT_PART(text, 'location: (', 2), ',', 1) AS FLOAT)
+                        - %s) / 2), 2) +
+                    COS(RADIANS(%s)) *
+                    COS(RADIANS(CAST(SPLIT_PART(SPLIT_PART(text, 'location: (', 2), ',', 1) AS FLOAT))) *
+                    POWER(SIN(RADIANS(
+                        CAST(SPLIT_PART(SPLIT_PART(SPLIT_PART(text, 'location: (', 2), ')', 1), ', ', 2) AS FLOAT)
+                        - %s) / 2), 2)
+                ))
+            ) AS distance_meters
         FROM documents
-        ORDER BY embedding <=> %s::vector
-        LIMIT 50
-        """,
-        (query_embedding,)
-    )
+        WHERE text LIKE '%%feature_type%%'
+        AND text LIKE '%%location:%%'
+        ORDER BY distance_meters ASC
+        LIMIT 5
+    """, (lat, lat, lon))
+    
     results = cur.fetchall()
     cur.close()
     conn.close()
 
-    # filter by actual distance
-    candidates = []
-    for text, source in results:
-        try:
-            parts = [p.strip() for p in text.split("|")]
-            loc_part = next((p for p in parts if p.startswith("location:")), None)
-            if not loc_part:
-                continue
-            coords = loc_part.replace("location:", "").strip().strip("()")
-            stored_lat, stored_lon = [float(c.strip()) for c in coords.split(",")]
-            distance = haversine_distance(lat, lon, stored_lat, stored_lon)
-            candidates.append({
+    matches = []
+    for text, source, distance in results:
+        if distance <= radius_meters:
+            matches.append({
                 "text": text,
                 "source": source,
                 "distance_meters": round(distance, 2)
             })
-        except Exception:
-            continue
 
-    candidates.sort(key=lambda x: x["distance_meters"])
-    return [c for c in candidates if c["distance_meters"] <= radius_meters]
+    return matches
+# async def search_by_location(lat: float, lon: float, radius_meters: float = 500):
+#     """Search pgvector for VLM assessments near a coordinate"""
+#     location_query = f"feature_type damage location {lat:.5f} {lon:.5f}"
+#     query_embedding = embed(location_query)
+
+#     conn = get_db_connection()
+#     cur = conn.cursor()
+#     cur.execute(
+#         """
+#         SELECT text, source
+#         FROM documents
+#         ORDER BY embedding <=> %s::vector
+#         LIMIT 50
+#         """,
+#         (query_embedding,)
+#     )
+#     results = cur.fetchall()
+#     cur.close()
+#     conn.close()
+
+#     # filter by actual distance
+#     candidates = []
+#     for text, source in results:
+#         try:
+#             parts = [p.strip() for p in text.split("|")]
+#             loc_part = next((p for p in parts if p.startswith("location:")), None)
+#             if not loc_part:
+#                 continue
+#             coords = loc_part.replace("location:", "").strip().strip("()")
+#             stored_lat, stored_lon = [float(c.strip()) for c in coords.split(",")]
+#             distance = haversine_distance(lat, lon, stored_lat, stored_lon)
+#             candidates.append({
+#                 "text": text,
+#                 "source": source,
+#                 "distance_meters": round(distance, 2)
+#             })
+#         except Exception:
+#             continue
+
+#     candidates.sort(key=lambda x: x["distance_meters"])
+#     return [c for c in candidates if c["distance_meters"] <= radius_meters]
 
 
 # --- Tool Definitions ---
