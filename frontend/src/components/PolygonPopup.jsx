@@ -20,15 +20,14 @@ export const popupOptions = {
 
 // --- HTML STRING FOR LEAFLET POPUP - Content inside popup itself ---
 export function buildPopupHTML(feature) {
-  const { damage_type, damage_cost } = feature.properties
-
+  const { damage_type, cost_usd } = feature.properties
   // Format damage cost as USD
-  const formattedCost = damage_cost
-    ? `$${Number(damage_cost).toLocaleString()}`
-    : 'N/A'
+  const formattedCost = cost_usd
+    ? `$${Number(cost_usd).toLocaleString()}`
+    : 'No Cost'
 
   const severity    = SEVERITY_LABELS[damage_type] || 'Unknown'
-  const description = feature.properties.description || 'N/A'
+  const description = feature.properties.description.reasoning || 'N/A'
 
   return `
     <div style="
