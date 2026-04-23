@@ -87,11 +87,20 @@ export default function ChatBox({ onClose, selectedFeature }) {
     const severity = SEVERITY_LABELS[props.damage_type] || props.damage_type || 'Unknown'
     const cost = props.cost_usd ? `$${Number(props.cost_usd).toLocaleString()}` : 'N/A'
 
+    // extract coordinates from the polygon 
+    let lat = null
+    let lon = null
+    if (feature.geometry?.coordinates?.[0]?.[0]) {
+        const coord = feature.geometry.coordinates[0][0]
+        lon = coord[0]
+        lat = coord[1]
+    }
+
     let descriptionText = 'N/A'
     if (props.description && typeof props.description === 'object') {
-      descriptionText = props.description.reasoning || props.description.diff_description || 'N/A'
+        descriptionText = props.description.reasoning || props.description.diff_description || 'N/A'
     } else if (props.description) {
-      descriptionText = props.description
+        descriptionText = props.description
     }
 
     return `The user has selected a specific damage assessment tile on the map. Here are its details:
@@ -99,10 +108,11 @@ export default function ChatBox({ onClose, selectedFeature }) {
 - Damage type: ${severity}
 - Damage cost: ${cost}
 - UID: ${props.uid || 'Unknown'}
+- Coordinates: (${lat}, ${lon})
 - Assessment reasoning: ${descriptionText}
 
-Use this information to answer any follow-up questions about this specific tile.`
-  }
+Use this information to answer any follow-up questions about this specific tile. If the user asks for the address, use the get_address_from_coordinates tool with the coordinates above.`
+}
 
   const sendMessage = async () => {
     const message = inputValue.trim();

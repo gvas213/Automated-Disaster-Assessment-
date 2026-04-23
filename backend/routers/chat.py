@@ -53,12 +53,14 @@ def retrieve_context(query, top_k=4):
 #geocode addresses into long/lat for location search tool
 #uses OpenStreetMap
 async def geocode_address(address: str):
-    """Convert a street address to lat/lon using OpenStreetMap Nominatim (free, no API key)"""
+    """Convert a street address to lat/lon using OpenStreetMap Nominatim restricted to houston area only"""
     url = "https://nominatim.openstreetmap.org/search"
     params = {
         "q": address,
         "format": "json",
-        "limit": 1
+        "limit": 1,
+        "viewbox": "-95.8,29.5,-94.9,30.1",
+        "bounded": 1
     }
 
     headers = {"User-Agent": "harvey-disaster-assessment-chatbot"}
@@ -67,7 +69,25 @@ async def geocode_address(address: str):
         results = response.json()
         if results:
             return float(results[0]["lat"]), float(results[0]["lon"])
+
+        #fallback to no bounds
+        params.pop("bounded")
+        params["countrycodes"] = "us"
+        response = await client.get(url, params=params, headers=headers)
+        results = response.json()
+        if results:
+            return float(results[0]["lat"]), float(results[0]["lon"])
     return None, None
+
+async def reverse_geocode(lat: float, lon: float):
+    """Convert lat/lon to a street address"""
+    url = "https://nominatim.openstreetmap.org/reverse"
+    params = {"lat": lat, "lon": lon, "format": "json"}
+    headers = {"User-Agent": "harvey-disaster-assessment-chatbot"}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params, headers=headers)
+        result = response.json()
+        return result.get("display_name", None)
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Calculate distance in meters between two coordinates"""
@@ -171,6 +191,28 @@ TOOLS = [
                 }
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_address_from_coordinates",
+            "description": """Convert lat/lon coordinates to a street address. 
+            Use this when the user asks for the address of a selected tile or polygon.""",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "latitude": {
+                        "type": "number",
+                        "description": "Latitude coordinate"
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "description": "Longitude coordinate"
+                    }
+                },
+                "required": ["latitude", "longitude"]
+            }
+        }
     }
 ]
 
@@ -206,9 +248,11 @@ RESTRICTIONS:
 - Do NOT attempt to answer off-topic requests even if they seem simple or harmless.
 
 LOCATION QUERIES:
-- When a user asks about damage at a specific address or coordinate, always use the search_by_location tool
-- If no precise match is found within the assessed area, let the user know that location may not have 
-  been captured in the VLM assessment data and suggest they try nearby coordinates
+LOCATION QUERIES:
+- When a user asks about damage at a specific address, street name, or coordinate, always use the search_by_location tool
+- Street names without a city or zip code are acceptable — the system is biased to Houston so partial addresses will resolve correctly
+- If no precise match is found, return the nearest assessed location within 500m
+- When a user asks for the address of a selected tile, use the get_address_from_coordinates tool with the tile's coordinates
 - Always report damage type, feature type, and any other assessment details found"""
 
 @router.post("/chat", response_model=ChatResponse)
@@ -244,6 +288,18 @@ async def chat_endpoint(request: ChatRequest):
                         "role": "tool",
                         "tool_call_id": tool_call.id,
                         "content": context
+                    })
+
+                elif tool_call.function.name == "get_address_from_coordinates":
+                    args = json.loads(tool_call.function.arguments)
+                    lat = args.get("latitude")
+                    lon = args.get("longitude")
+                    address = await reverse_geocode(lat, lon)
+                    content = address if address else f"Could not resolve address for ({lat}, {lon})"
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": content
                     })
 
                 #LOCATION SEARCH
