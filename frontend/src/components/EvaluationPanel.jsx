@@ -20,39 +20,28 @@ const TOTAL   = 7715
 const CORRECT = 3835 + 62 + 53 + 0
 const ACCURACY = ((CORRECT / TOTAL) * 100).toFixed(1)
 
-// confusion matrix data — rows = ground truth, cols = predicted
-// order: destroyed, major-damage, minor-damage, no-damage
 const CM_AXIS = ['destroyed', 'major-dmg', 'minor-dmg', 'no-damage']
 
-// row totals for normalization (ground truth counts, excluding unclassified)
 const ROW_TOTALS = {
-  0: 196,   // destroyed
-  1: 2374,  // major-damage
-  2: 871,   // minor-damage
-  3: 4168,  // no-damage
+  0: 196,
+  1: 2374,
+  2: 871,
+  3: 4168,
 }
 
-// [predicted_index, truth_index, value]
 const CM_RAW = [
-  // ground truth: destroyed
   [0, 0, 0],
   [1, 0, 5],
   [2, 0, 17],
   [3, 0, 174],
-
-  // ground truth: major-damage
   [0, 1, 9],
   [1, 1, 53],
   [2, 1, 160],
   [3, 1, 2152],
-
-  // ground truth: minor-damage
   [0, 2, 1],
   [1, 2, 17],
   [2, 2, 62],
   [3, 2, 791],
-
-  // ground truth: no-damage
   [0, 3, 16],
   [1, 3, 78],
   [2, 3, 239],
@@ -77,10 +66,7 @@ function getHeatmapOption() {
       nameLocation: 'middle',
       nameGap: 36,
       nameTextStyle: { color: '#ffffff', fontSize: 12 },
-      axisLabel: {
-        color: '#ffffff',
-        fontSize: 11,
-      },
+      axisLabel: { color: '#ffffff', fontSize: 11 },
       axisTick: { show: false },
       axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
       splitLine: { show: false },
@@ -92,10 +78,7 @@ function getHeatmapOption() {
       nameLocation: 'middle',
       nameGap: 72,
       nameTextStyle: { color: '#ffffff', fontSize: 12 },
-      axisLabel: {
-        color: '#ffffff',
-        fontSize: 11,
-      },
+      axisLabel: { color: '#ffffff', fontSize: 11 },
       axisTick: { show: false },
       axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
       splitLine: { show: false },
@@ -200,8 +183,7 @@ function BarChart() {
     const actualMap  = Object.fromEntries(ACTUAL.map(d => [d.label, d.count]))
     const predMap    = Object.fromEntries(PREDICTED.map(d => [d.label, d.count]))
 
-    const legendH = 24
-    const padL = 52, padR = 16, padT = legendH + 16, padB = 48
+    const padL = 52, padR = 16, padT = 36, padB = 48
     const chartW = W - padL - padR
     const chartH = H - padT - padB
 
@@ -215,22 +197,28 @@ function BarChart() {
 
     ctx.clearRect(0, 0, W, H)
 
-    // legend at top left
+    // legend at top right
     const legendItems = [
       ['actual (ground truth)', actualCol],
       ['predicted',             predCol],
     ]
-    let lx = padL
-    const ly = 6
-    legendItems.forEach(([label, col]) => {
+
+    ctx.font = '11px system-ui'
+    const itemWidths = legendItems.map(([label]) => 12 + 6 + ctx.measureText(label).width)
+    const legendGap = 20
+    const totalLegendW = itemWidths.reduce((a, b) => a + b, 0) + legendGap * (legendItems.length - 1)
+
+    let lx = W - padR - totalLegendW
+    const ly = 8
+
+    legendItems.forEach(([label, col], i) => {
       ctx.fillStyle = col
       ctx.fillRect(lx, ly, 12, 12)
       ctx.fillStyle = textCol
       ctx.font = '11px system-ui'
       ctx.textAlign = 'left'
-      ctx.fillText(label, lx + 16, ly + 10)
-      const textW = ctx.measureText(label).width
-      lx += 16 + textW + 24
+      ctx.fillText(label, lx + 18, ly + 10)
+      lx += itemWidths[i] + legendGap
     })
 
     // grid lines + y axis labels
@@ -353,7 +341,7 @@ export default function EvaluationPanel({ onClose }) {
             <p className="text-2xl font-medium text-teal-400">{CORRECT.toLocaleString()}</p>
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-            <p className="text-xs text-white mb-1">Overall accuracy</p>
+            <p className="text-sm font-medium text-white mb-1">Overall accuracy</p>
             <p className="text-2xl font-medium text-purple-400">{ACCURACY}%</p>
           </div>
         </div>
@@ -363,7 +351,7 @@ export default function EvaluationPanel({ onClose }) {
 
           {/* Bar chart */}
           <div className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-            <p className="text-xs text-white mb-4">Predicted vs actual severity distribution</p>
+            <p className="text-sm font-medium text-white mb-4">Predicted vs actual severity distribution</p>
             <BarChart />
           </div>
 
@@ -382,15 +370,28 @@ export default function EvaluationPanel({ onClose }) {
 
         {/* Confusion matrix — ECharts heatmap */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-          <p className="text-xs text-white mb-1">Confusion matrix</p>
-          <p className="text-xs text-zinc-400 mb-1">
-            Rows = ground truth &nbsp; &nbsp; Columns = predicted &nbsp; &nbsp;
-            <span style={{ color: '#1D9E75' }}> green diagonal = correct</span> &nbsp; &nbsp;
-            <span style={{ color: '#D23C3C' }}> red = misclassified</span>
-          </p>
-          {/* <p className="text-xs text-zinc-500 mb-4">
-            Each cell shows <span className="text-white font-semibold">row % (normalized)</span> on top and <span className="text-zinc-300">raw count</span> below
-          </p> */}
+
+          {/* Title + legend top row */}
+          <div className="flex items-start justify-between mb-4">
+
+            {/* Left: title + normalized note */}
+            <div>
+              <p className="text-sm font-medium text-white mb-1">Confusion matrix</p>
+              <p className="text-xs text-zinc-500">
+                Each cell shows <span className="text-white font-semibold">row % (normalized)</span> on top and <span className="text-zinc-300">raw count</span> below
+              </p>
+            </div>
+
+            {/* Right: 2x2 legend grid */}
+            <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs shrink-0 ml-6">
+              <span className="text-zinc-400">Rows = Ground Truth</span>
+              <span style={{ color: '#1D9E75' }}>Green = Correct</span>
+              <span className="text-zinc-400">Columns = Predicted</span>
+              <span style={{ color: '#D23C3C' }}>Red = Misclassified</span>
+            </div>
+
+          </div>
+
           <ReactECharts
             option={getHeatmapOption()}
             style={{ height: '360px', width: '100%' }}
