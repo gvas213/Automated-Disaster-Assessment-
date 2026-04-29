@@ -294,8 +294,8 @@ function EvalSection({ label, actual, predicted, total, correct, accuracy, parti
 
       {/* Section label */}
       <div className="flex items-center gap-3">
-        <span className="text-m font-semibold uppercase tracking-widest text-zinc-400 px-2 py-1 rounded border border-zinc-700 bg-zinc-800/50">
-          {label}
+        <span className="text-xl font-bold uppercase tracking-widest text-white px-2 py-1">
+          {label} DATA
         </span>
       </div>
 
