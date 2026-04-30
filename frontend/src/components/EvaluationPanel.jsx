@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReactECharts from 'echarts-for-react'
 
 // ─── TRAIN DATA ───────────────────────────────────────────────────────────────
@@ -54,26 +54,17 @@ const TEST_CORRECT  = 10426 + 182 + 258 + 2
 const TEST_ACCURACY = ((TEST_CORRECT / TEST_TOTAL) * 100).toFixed(1)
 const TEST_PARTIAL  = 63.8
 
-// ground truth row totals: destroyed=401, major=8238, minor=2663, no-damage=11423
-// axis order: [destroyed, major-dmg, minor-dmg, no-damage] → indices 0,1,2,3
 const TEST_ROW_TOTALS = {
-  0: 401,   // destroyed
-  1: 8238,  // major-damage
-  2: 2663,  // minor-damage
-  3: 11423, // no-damage
+  0: 401,
+  1: 8238,
+  2: 2663,
+  3: 11423,
 }
 
-// [x=predicted, y=ground_truth, count]
-// predicted axis: 0=destroyed,1=major-dmg,2=minor-dmg,3=no-damage
-// ground_truth axis: 0=destroyed,1=major-dmg,2=minor-dmg,3=no-damage
 const TEST_CM_RAW = [
-  // destroyed row (y=0): destroyed x2, major x9, minor x32, no-damage x358
   [0,0,2],[1,0,9],[2,0,32],[3,0,358],
-  // major-damage row (y=1): destroyed x21, major x258, minor x622, no-damage x7337
   [0,1,21],[1,1,258],[2,1,622],[3,1,7337],
-  // minor-damage row (y=2): destroyed x4, major x63, minor x182, no-damage x2414
   [0,2,4],[1,2,63],[2,2,182],[3,2,2414],
-  // no-damage row (y=3): destroyed x30, major x262, minor x705, no-damage x10426
   [0,3,30],[1,3,262],[2,3,705],[3,3,10426],
 ]
 
@@ -307,7 +298,7 @@ function EvalSection({ label, actual, predicted, total, correct, accuracy, parti
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <p className="text-xs text-zinc-400 mb-1">Correct predictions</p>
-          <p className="text-2xl font-medium text-teal-400">{correct.toLocaleString()}</p>
+          <p className="text-2xl font-medium">{correct.toLocaleString()}</p>
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <p className="text-xs text-zinc-400 mb-1">Exact accuracy</p>
@@ -315,7 +306,7 @@ function EvalSection({ label, actual, predicted, total, correct, accuracy, parti
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
           <p className="text-xs text-zinc-400 mb-1">Partial score</p>
-          <p className="text-2xl font-medium text-amber-400">{partial}%</p>
+          <p className="text-2xl font-medium text-teal-400">{partial}%</p>
         </div>
       </div>
 
@@ -326,7 +317,7 @@ function EvalSection({ label, actual, predicted, total, correct, accuracy, parti
           <BarChart actual={actual} predicted={predicted} />
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 flex flex-col items-center justify-center gap-4" style={{ width: '200px' }}>
-          <p className="text-xs text-zinc-400 text-center">Overall accuracy</p>
+          <p className="text-xs text-zinc-400 text-center">Exact accuracy</p>
           <DonutAccuracy correct={correct} total={total} accuracy={accuracy} />
           <div className="text-center flex flex-col gap-1">
             <p className="text-xs text-zinc-400">{total.toLocaleString()} total</p>
@@ -357,6 +348,234 @@ function EvalSection({ label, actual, predicted, total, correct, accuracy, parti
           style={{ height: '360px', width: '100%' }}
           theme="dark"
         />
+      </div>
+
+    </div>
+  )
+}
+
+// ─── ACCORDION TOGGLE SECTION ─────────────────────────────────────────────────
+
+function AccordionSection({ title, children }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-zinc-800 transition-colors"
+      >
+        <span className="text-sm font-semibold text-white tracking-wide">{title}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          style={{
+            width: 16,
+            height: 16,
+            color: 'rgba(255,255,255,0.5)',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+            flexShrink: 0,
+          }}
+        >
+          <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="px-5 pb-5 border-t border-zinc-800">
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── SCORING TABLE ────────────────────────────────────────────────────────────
+
+function ScoringTable() {
+  const rows = [
+    {
+      rule: 'Correct Prediction',
+      score: '1.00 pt',
+      scoreColor: '#FFFFFF',
+      desc: "The model's prediction was spot on with the ground truth label.",
+    },
+    {
+      rule: 'Off by 1 Level',
+      score: '0.50 pt',
+      scoreColor: '#FFFFFF',
+      desc: "The model's prediction was off by one severity level — e.g. ground truth was \"Minor Damage\" but the model predicted \"No Damage\" or \"Major Damage\".",
+    },
+    {
+      rule: 'Off by 2 Levels',
+      score: '0.25 pt',
+      scoreColor: '#FFFFFF',
+      desc: "The model's prediction was off by two severity levels — e.g. ground truth was \"Minor Damage\" but the model predicted \"Destroyed\".",
+    },
+    {
+      rule: 'Off by 3 Levels',
+      score: '0.00 pt',
+      scoreColor: '#FFFFFF',
+      desc: "The model's prediction was off by three severity levels — e.g. ground truth was \"No Damage\" but the model predicted \"Destroyed\".",
+    },
+  ]
+
+ return (
+  <div className="rounded-lg overflow-hidden border border-zinc-700 mt-4">
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+          <th className="text-left text-xs font-semibold text-zinc-300 px-4 py-3" style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}>Rule</th>
+          <th className="text-left text-xs font-semibold text-zinc-300 px-4 py-3" style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}>Score</th>
+          <th className="text-left text-xs font-semibold text-zinc-300 px-4 py-3">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr
+            key={i}
+            style={{
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              // backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
+            }}
+          >
+            <td className="px-4 py-3 text-xs text-white font-medium whitespace-nowrap" style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}>{row.rule}</td>
+            <td className="px-4 py-3 text-xs font-bold whitespace-nowrap text-white" style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}>{row.score}</td>
+            <td className="px-4 py-3 text-xs text-zinc-400 leading-relaxed">{row.desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+}
+
+// ─── INFO SECTIONS CONTENT ────────────────────────────────────────────────────
+
+function PartialVsExactContent() {
+  return (
+    <div className="flex flex-col gap-4 pt-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-bold px-0 py-0.5 rounded-full text-white">Exact Accuracy</span>
+          </div>
+          <p className="text-xs text-zinc-300 leading-relaxed">
+            Indicates how often the model is correct according to the ground truth label. A prediction is measured based on if is right or wrong, where no partial credit is given.
+          </p>
+        </div>
+        <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-bold px-0 py-0.5 rounded-full text-white">Partial Score</span>
+          </div>
+          <p className="text-xs text-zinc-300 leading-relaxed">
+            Indicates how close the model’s predictions were to the ground truth label when incorrect. Partial credit is given, if the prediction was a near-miss. 
+          </p>
+        </div>
+      </div>
+
+     
+    </div>
+  )
+}
+
+function PartialScoringContent() {
+  return (
+    <div className="flex flex-col gap-4 pt-4">
+      {/* <div>
+        <p className="text-xs font-semibold text-zinc-300 mb-3">Severity Levels</p>
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { level: '0', label: 'No Damage',    color: '#5DCAA5' },
+            { level: '1', label: 'Minor Damage',  color: '#7F77DD' },
+            { level: '2', label: 'Major Damage',  color: '#F59E0B' },
+            { level: '3', label: 'Destroyed',     color: '#EF4444' },
+          ].map(({ level, label, color }) => (
+            <div
+              key={level}
+              className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2"
+            >
+              <span
+                className="text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: `${color}22`, color }}
+              >
+                {level}
+              </span>
+              <span className="text-xs text-zinc-300">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div> */}
+
+      <div className="mb-6">
+        <p className="text-xs font-semibold text-zinc-300 mb-1">Scoring Rules</p>
+        <p className="text-xs text-zinc-400 mb-2">
+          Partial scoring, scores the VLM predictions based on how close the categorization prediction was correspondent to the ground truth damage level.
+          For each polygon that the VLM predicts, its is scored through this system: 
+        </p>
+        <ScoringTable />
+      </div>
+
+      
+      <div className="flex flex-col gap-1">
+        {/* Title */}
+        <p className="text-xs font-semibold text-zinc-300 mb-1">
+          Partial Scoring Calculation
+        </p>
+
+        {/* Description */}
+        <p className="text-xs text-zinc-400 leading-relaxed">
+          The partial score is the average of all partial scores calculated for every polygon prediction. It results in a higher value than the exact accuracy, since near-misses are given partial credit rather than being treated as complete failures.
+        </p>
+
+        {/* Formula */}
+        <div className="flex justify-center mt-2">
+          <p className="text-xs font-mono text-zinc-300 text-center">
+            partial score = Σ(partial credits) / total polygons
+          </p>
+        </div>
+      </div>
+ 
+    </div>
+  )
+}
+
+function ProblemsFacedContent() {
+  return (
+    <div className="flex flex-col gap-4 pt-4">
+      <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+        <div className="flex items-start gap-3">
+          <div
+            className="w-2 h-2 rounded-full mt-1.5 shrink-0"
+            style={{ backgroundColor: '#EF4444' }}
+          />
+          <div>
+            <p className="text-xs font-semibold text-white mb-2">Prediction Behavior Under Uncertainty</p>
+            <ul className="flex flex-col gap-2">
+              <li className="text-xs text-zinc-400 leading-relaxed">
+                The model has a tendency to predict <span className="text-white font-medium">"no-damage"</span> when faced with uncertainty rather than categorizing a building to a higher severity level. However, when the ground truth label is no-damaged, the model is highly accurate in identifying it. 
+              </li>
+            
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+        <div className="flex items-start gap-3">
+          <div
+            className="w-2 h-2 rounded-full mt-1.5 shrink-0"
+            style={{ backgroundColor: '#EF4444' }}
+          />
+          <div>
+            <p className="text-xs font-semibold text-white mb-2">Precise Classification</p>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              The model captures the overall severity scale, but can inaccurately predict adjacent categories lacking precise predictions.
+            </p>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -400,10 +619,10 @@ export default function EvaluationPanel({ onClose }) {
           rowTotals={TRAIN_ROW_TOTALS}
         />
 
-      {/* ── DIVIDER ── */}
-      <div className="flex items-center py-2">
-        <div className="w-full h-px bg-zinc-700" />
-      </div>
+        {/* ── DIVIDER ── */}
+        <div className="flex items-center py-2">
+          <div className="w-full h-px bg-zinc-700" />
+        </div>
 
         {/* ── TEST SECTION ── */}
         <EvalSection
@@ -417,6 +636,26 @@ export default function EvaluationPanel({ onClose }) {
           cmRaw={TEST_CM_RAW}
           rowTotals={TEST_ROW_TOTALS}
         />
+
+        {/* ── DIVIDER ── */}
+        <div className="flex items-center py-2">
+          <div className="w-full h-px bg-zinc-700" />
+        </div>
+
+        {/* ── ACCORDION INFO SECTIONS ── */}
+        <div className="flex flex-col gap-3">
+          <AccordionSection title="Exact Accuracy vs Partial Score">
+            <PartialVsExactContent />
+          </AccordionSection>
+
+          <AccordionSection title="Partial Scoring">
+            <PartialScoringContent />
+          </AccordionSection>
+
+          <AccordionSection title="Problems Faced">
+            <ProblemsFacedContent />
+          </AccordionSection>
+        </div>
 
       </div>
     </div>
