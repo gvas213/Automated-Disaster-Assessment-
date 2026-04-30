@@ -2,6 +2,7 @@ import { useState } from "react"
 import Map from './components/Map'
 import NavBar from './components/NavBar'
 import ChatBox from './components/Chatbox'
+import VLMUploadModal from "./components/VLMUploadModal"
 
 function App() {
   const [chatOpen, setChatOpen] = useState(false)
@@ -12,7 +13,7 @@ function App() {
   const [polygonMinZoom, setPolygonMinZoom] = useState(15)
   const [currentZoom, setCurrentZoom] = useState(15)
   const [selectedFeature, setSelectedFeature] = useState(null) //which polygon is clicked
-
+  const [showAssessModal, setShowAssessModal] = useState(false)
   return (
     <div className="h-screen w-screen overflow-hidden">
     <NavBar
@@ -28,7 +29,12 @@ function App() {
   onHurricanePathToggle={() => setShowHurricanePath(v => !v)}
   polygonMinZoom={polygonMinZoom}
   onPolygonMinZoomChange={setPolygonMinZoom}
+  
 />
+{showAssessModal && (
+        <VLMUploadModal onClose={() => setShowAssessModal(false)} />
+      )}
+
 <Map
   currentIndex={currentIndex}
   onTotalChange={setTotal}
@@ -37,10 +43,12 @@ function App() {
   polygonMinZoom={polygonMinZoom}
   onZoomChange={setCurrentZoom}
   onFeatureSelect={setSelectedFeature}
+  onAssessClick={() => setShowAssessModal(true)}
 />
       {chatOpen && <ChatBox onClose={() => setChatOpen(false)} 
       selectedFeature={selectedFeature}
       />}
+      
     </div>
   )
 }
