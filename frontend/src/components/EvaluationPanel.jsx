@@ -555,7 +555,8 @@ function ProblemsFacedContent() {
             <p className="text-xs font-semibold text-white mb-2">Prediction Behavior Under Uncertainty</p>
             <ul className="flex flex-col gap-2">
               <li className="text-xs text-zinc-400 leading-relaxed">
-                The model has a tendency to predict <span className="text-white font-medium">"no-damage"</span> when faced with uncertainty rather than categorizing a building to a higher severity level. However, when the ground truth label is no-damaged, the model is highly accurate in identifying it. 
+                The model has a tendency to predict "no-damage" when faced with uncertainty rather than categorizing a building to a higher severity level. More specifically, low resolution of the image and low detail make it hard for the VLM to notice small or minor changes. This makes the model biased towards no damage. However, when the ground truth label is no damage, the model is highly accurate in identifying it.
+               
               </li>
             
             </ul>
@@ -570,9 +571,25 @@ function ProblemsFacedContent() {
             style={{ backgroundColor: '#EF4444' }}
           />
           <div>
-            <p className="text-xs font-semibold text-white mb-2">Precise Classification</p>
+            <p className="text-xs font-semibold text-white mb-2">Precise Classification and Cost Limitations</p>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              The model captures the overall severity scale, but can inaccurately predict adjacent categories lacking precise predictions.
+              The model captures the overall severity scale, but can inaccurately predict adjacent categories, lacking precise predictions. This is due to the costs of the API and limited options to more powerful VLMs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+       <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+        <div className="flex items-start gap-3">
+          <div
+            className="w-2 h-2 rounded-full mt-1.5 shrink-0"
+            style={{ backgroundColor: '#EF4444' }}
+          />
+          <div>
+            <p className="text-xs font-semibold text-white mb-2">Trade-Off Between Sensitivity and Specificity</p>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+             Reducing false positives directly caused false negatives. Getting the model to be more precise about "what changed" made it too strict about what counts as change. The core tension is between sensitivity and specificity, and without training data to tune it, the balance is hard to control through prompting alone.
             </p>
           </div>
         </div>
