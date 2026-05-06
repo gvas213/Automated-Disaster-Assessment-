@@ -124,7 +124,9 @@ jobs:
             npm ci
             npm run build
 
-            # Restart the FastAPI service (serves both API and frontend dist)
+            # Apply any service file changes from the repo, then reload and restart
+            sudo cp ~/Automated-Disaster-Assessment-/deploy/myapp.service /etc/systemd/system/myapp.service
+            sudo systemctl daemon-reload
             sudo systemctl restart myapp.service
             sudo systemctl status myapp.service --no-pager
           EOF
