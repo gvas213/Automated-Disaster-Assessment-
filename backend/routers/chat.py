@@ -4,7 +4,8 @@ import psycopg2
 import json 
 import math
 import httpx
-from pinecone import Pinecone
+#Seems to be unused, not removing fully, since it's not my part of the project
+#from pinecone import Pinecone
 from fastapi import APIRouter, HTTPException
 from models.schemas import ChatRequest, ChatResponse
 from dotenv import load_dotenv
@@ -361,7 +362,8 @@ async def chat_endpoint(request: ChatRequest):
                                 f"{m['text']} (distance: {m['distance_meters']}m)"
                                 for m in matches
                             ])
-                            sources = list(set([m["source"] for m in matches]))
+                            #Seems to be unused, not removing fully, since it's not my part of the project
+                            #sources = list(set([m["source"] for m in matches]))
                         else:
                             content = f"No assessment found within 500m of ({lat:.5f}, {lon:.5f}). This location may not have been assessed by the VLM."
                             
