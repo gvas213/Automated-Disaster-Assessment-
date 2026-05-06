@@ -1,0 +1,55 @@
+# ============================================================
+# myapp.service — systemd unit for the FastAPI backend
+# ============================================================
+#
+# HOW TO INSTALL / UPDATE ON EC2:
+#   1. Copy this file to the system service directory:
+#        sudo cp ~/Automated-Disaster-Assessment-/deploy/myapp.service /etc/systemd/system/myapp.service
+#
+#   2. Reload systemd so it picks up any changes:
+#        sudo systemctl daemon-reload
+#
+#   3. Enable auto-start on reboot (first time only):
+#        sudo systemctl enable myapp.service
+#
+#   4. Start / restart the service:
+#        sudo systemctl restart myapp.service
+#
+#   5. Check it is running:
+#        sudo systemctl status myapp.service
+#
+# ENVIRONMENT VARIABLES:
+#   Secrets (API keys, DB URL, etc.) are loaded by load_dotenv() in chat.py,
+#   which reads /home/ubuntu/Automated-Disaster-Assessment-/backend/.env on EC2.
+#   That file is excluded from rsync and is NOT in this repo — it must be
+#   created manually on the server and kept there permanently.
+#   Template:
+#        OPENAI_API_KEY=...
+#        DATABASE_URL=...
+#
+#   NOTE: /etc/app.env is referenced by EnvironmentFile= below but is currently
+#   empty. It can be removed or populated if you ever want systemd-level env vars.
+# LOGS:
+#   sudo journalctl -u myapp.service -f
+# ============================================================
+
+[Unit]
+Description=FastAPI Backend
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Automated-Disaster-Assessment-/backend
+
+ExecStart=/home/ubuntu/Automated-Disaster-Assessment-/backend/venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 3001
+
+Restart=always
+
+EnvironmentFile=-/etc/app.env
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=backend
+
+[Install]
+WantedBy=multi-user.target
