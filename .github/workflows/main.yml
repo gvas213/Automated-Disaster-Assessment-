@@ -98,7 +98,7 @@ jobs:
             -e "ssh -i ~/.ssh/ec2_key.pem" \
             ./ ${EC2_USERNAME}@${EC2_HOST}:~/Automated-Disaster-Assessment-
 
-      - name: Build frontend and restart service on EC2
+      - name: Install backend deps, build frontend, and restart service on EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
@@ -110,9 +110,17 @@ jobs:
             ${EC2_USERNAME}@${EC2_HOST} << 'EOF'
             set -e
 
+            # Backend: install Python deps into the existing venv
+            cd ~/Automated-Disaster-Assessment-/backend
+            ./venv/bin/pip install --upgrade pip
+            ./venv/bin/pip install -r requirements.txt
+
+            # Frontend: install JS deps and build the static bundle
             cd ~/Automated-Disaster-Assessment-/frontend
             npm ci
             npm run build
+
+            # Restart the FastAPI service (serves both API and frontend dist)
             sudo systemctl restart myapp.service
             sudo systemctl status myapp.service --no-pager
           EOF
