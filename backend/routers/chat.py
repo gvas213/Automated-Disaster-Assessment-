@@ -1,11 +1,9 @@
 import os
 import openai
 import psycopg2
-import json 
+import json
 import math
 import httpx
-#Seems to be unused, not removing fully, since it's not my part of the project
-#from pinecone import Pinecone
 from fastapi import APIRouter, HTTPException
 from models.schemas import ChatRequest, ChatResponse
 from dotenv import load_dotenv
