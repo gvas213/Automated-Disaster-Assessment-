@@ -63,6 +63,10 @@ jobs:
         working-directory: backend
         run: python -m compileall -q .
 
+      - name: Import-check FastAPI app
+        working-directory: backend
+        run: python -c "import main"
+
   deploy:
     name: Sync files and build on EC2
     needs: [frontend-checks, backend-checks]
