@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
-    name: Lint frontend
+  frontend-checks:
+    name: Lint and build frontend
     runs-on: ubuntu-latest
 
     steps:
@@ -29,9 +29,43 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  backend-checks:
+    name: Lint and import-check backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff
+
+      - name: Ruff lint
+        working-directory: backend
+        run: ruff check .
+
+      - name: Compile-check all Python modules
+        working-directory: backend
+        run: python -m compileall -q .
+
   deploy:
     name: Sync files and build on EC2
-    needs: lint
+    needs: [frontend-checks, backend-checks]
     runs-on: ubuntu-latest
 
     steps:
@@ -78,6 +112,23 @@ jobs:
             sudo systemctl restart myapp.service
             sudo systemctl status myapp.service --no-pager
           EOF
+
+      - name: Post-deploy health check
+        env:
+          HEALTH_URL: ${{ vars.HEALTH_URL || 'https://test.disaster.fit/api/health' }}
+        run: |
+          echo "Probing $HEALTH_URL"
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS --max-time 5 "$HEALTH_URL" > /tmp/health.json; then
+              echo "Health check passed:"
+              cat /tmp/health.json
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 3s..."
+            sleep 3
+          done
+          echo "Health check failed after 10 attempts"
+          exit 1
 
       - name: Cleanup SSH key
         if: always()
