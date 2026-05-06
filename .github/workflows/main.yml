@@ -33,6 +33,14 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: Upload frontend dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 1
+          if-no-files-found: error
+
   backend-checks:
     name: Lint and import-check backend
     runs-on: ubuntu-latest
@@ -76,6 +84,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Download prebuilt frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
       - name: Setup SSH key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -102,7 +116,7 @@ jobs:
             -e "ssh -i ~/.ssh/ec2_key.pem" \
             ./ ${EC2_USERNAME}@${EC2_HOST}:~/Automated-Disaster-Assessment-
 
-      - name: Install backend deps, build frontend, and restart service on EC2
+      - name: Install backend deps and restart service on EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
@@ -119,10 +133,7 @@ jobs:
             ./venv/bin/pip install --upgrade pip
             ./venv/bin/pip install -r requirements.txt
 
-            # Frontend: install JS deps and build the static bundle
-            cd ~/Automated-Disaster-Assessment-/frontend
-            npm ci
-            npm run build
+            # Frontend dist was built on the runner and rsynced in — nothing to do here.
 
             # Restart the FastAPI service (serves both API and frontend dist)
             sudo systemctl restart myapp.service
