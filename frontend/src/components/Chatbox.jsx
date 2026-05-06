@@ -37,12 +37,18 @@ export default function ChatBox({ onClose, selectedFeature }) {
   useEffect(() => {
     try {
       sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
-    } catch {}
+    } catch {
+      // sessionStorage unavailable (private mode, quota exceeded) — non-fatal
+    }
   }, [messages]);
 
   const handleNewChat = () => {
     setMessages([]);
-    try { sessionStorage.removeItem(CHAT_STORAGE_KEY); } catch {}
+    try {
+      sessionStorage.removeItem(CHAT_STORAGE_KEY);
+    } catch {
+      // sessionStorage unavailable — non-fatal
+    }
   };
 
   const handleMouseMove = useCallback((e) => {
