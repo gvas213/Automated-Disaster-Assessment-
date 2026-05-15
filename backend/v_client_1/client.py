@@ -33,6 +33,8 @@ UPSCALE_FACTOR = 2
 NOISE_THRESHOLD = 50
 AMPLIFY_FACTOR = 3.0
 
+MIN_DIMENSION = 512  # OpenAI vision API requires images to be at least this size
+
 DAMAGE_LABELS = {
     "no-damage": "No Damage",
     "minor-damage": "Minor Damage",
@@ -66,7 +68,9 @@ def _call_vlm(prompt: str, image_paths: list[str]) -> dict:
 
 def _upscale(input_path: str, scale: int, out_dir: str) -> str:
     img = Image.open(input_path).convert("RGB")
-    upscaled = img.resize((img.width * scale, img.height * scale), Image.LANCZOS)
+    new_w = max(img.width * scale, MIN_DIMENSION)
+    new_h = max(img.height * scale, MIN_DIMENSION)
+    upscaled = img.resize((new_w, new_h), Image.LANCZOS)
     name = os.path.splitext(os.path.basename(input_path))[0] + f"_up{scale}x.png"
     out_path = os.path.join(out_dir, name)
     upscaled.save(out_path)
@@ -85,8 +89,12 @@ def _compute_diff(
     (everything outside is blacked out) and draws a red outline, matching v9
     behaviour. Otherwise uses the full image.
     """
-    pre = np.array(Image.open(pre_path).convert("L"), dtype=np.float32)
-    post = np.array(Image.open(post_path).convert("L"), dtype=np.float32)
+    pre_img = Image.open(pre_path).convert("L")
+    post_img = Image.open(post_path).convert("L")
+    if post_img.size != pre_img.size:
+        post_img = post_img.resize(pre_img.size, Image.LANCZOS)
+    pre = np.array(pre_img, dtype=np.float32)
+    post = np.array(post_img, dtype=np.float32)
 
     diff = np.abs(pre - post)
     diff[diff < NOISE_THRESHOLD] = 0
